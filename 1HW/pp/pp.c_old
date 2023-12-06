@@ -1,0 +1,43 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+#define SIZE 100000000
+
+#if 0
+void initialize(unsigned long long *arr, unsigned long long size, unsigned val){
+  for(; size > 0; --size){
+    arr[size-1] = val;
+  }
+}
+#endif
+
+void fib(unsigned long n, unsigned long m){
+  unsigned long i;
+  unsigned fseq[SIZE] = {0};
+  unsigned long piz = 0ull;
+#if 0
+  initialize(fseq, SIZE, 0ull);
+#endif
+  fseq[1] = 1ull;
+
+  for(i=2; i<SIZE; ++i){
+    fseq[i] = (fseq[i-1] + fseq[i-2])%m;
+    if (fseq[i-1] == 1u && fseq[i] == 0u){
+      piz = i;
+      break;
+    }
+  }
+  printf("%u %lu\n", fseq[n%piz], piz);
+}
+
+
+int main(){
+  unsigned long x;
+  unsigned long m;
+  if(scanf("%lu%lu",&x,&m) != 2){
+    abort();
+  }
+  fib(x,m);
+
+  return 0;
+}

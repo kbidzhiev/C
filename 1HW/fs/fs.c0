@@ -1,0 +1,56 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int fact(int n){
+  int res = 1;
+  for (int i = 2; i !=n+1; ++i){
+    res *= i;
+  }
+  return res;
+}
+
+int hpow(int n){//highest factorial
+  int pow = 1;
+  for(int fact = pow; n/fact != 0; ++pow){
+    fact *= pow;
+    //printf("pow=%d, fact=%d, n/fact=%d\n", pow, fact, n/fact);
+  }
+  pow -= 2;
+  return pow;
+}
+
+int convert(unsigned n, unsigned pow, int* res){
+  int f = fact(pow);
+
+  for (; pow >= 1; --pow){
+    res[pow-1] = n/f;
+    n = n%f;
+    f /= pow;
+  }
+
+  return 0;
+}
+
+void print_converted(unsigned n){
+  int pow = hpow(n);
+  int res[pow];
+  convert(n, pow, res);
+
+  --pow;
+  for (; pow >=0;--pow){
+      printf("%d.", res[pow]);
+  }
+  printf("\n");
+}
+
+
+int main(){
+  int n, scaned;
+
+  scaned = scanf("%d", &n);
+  if(scaned != 1) abort();
+  print_converted(n);
+  //printf("%d", hpow(n));
+
+  return 0;
+}

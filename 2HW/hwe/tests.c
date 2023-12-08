@@ -4,21 +4,54 @@
 #include"sieve.h"
 #include"hwe.h"
 
-void test(){
-  int size = 70000000;//25000000;
+
+int is_prime_simple(unsigned long long n){
+  if ((n ==2) || (n==3)) return 1;
+  if ((n<2) || ((n%2)== 0) || ((n%3)==0)) return 0;
+
+  for (unsigned long long j = 5; j*j <= n; j +=6)
+    if (((n%j)==0) || (n%(j+2))==0) return 0;
+
+  return 1;
+}
+
+void test_range(){
+  int i, size = 1000;
   struct sieve_t sv;
   init_sieve(&sv, size);
+  fill_sieve(&sv);
 
+  for(i = 0; i<size; ++i){
+    assert(is_prime_simple(i) == is_prime(&sv, i));
+  }
+  free_sieve(&sv);
+  printf("tests range DONE\n");
+}
+
+void test_nth_prime(){
+  int size = 70000000;
+  struct sieve_t sv;
+  init_sieve(&sv, size);
   fill_sieve(&sv);
 
   assert(29 == nth_prime(&sv, 10));
   assert(71 == nth_prime(&sv, 20));
   assert(113 == nth_prime(&sv, 30));
   assert(173 == nth_prime(&sv, 40));
-
   assert(7919 == nth_prime(&sv, 1000));
-  assert(1400305337 == nth_prime(&sv, 70000000));
   assert(472882027 == nth_prime(&sv, 25000000));
+  assert(1400305337 == nth_prime(&sv, 70000000));
+
+  free_sieve(&sv);
+}
+
+void test_is_prime(){
+  int size = sieve_size(7727);
+  struct sieve_t sv;
+  init_sieve(&sv, size);
+
+  fill_sieve(&sv);
+
 
   assert(1 == is_prime(&sv, 13));
   assert(1 == is_prime(&sv, 17));
@@ -39,4 +72,10 @@ void test(){
 
   free_sieve(&sv);
   printf("tests are DONE\n");
+}
+
+void test(){
+  test_range();
+  test_nth_prime();
+  test_hwe();
 }

@@ -15,8 +15,20 @@ int is_prime_simple(unsigned long long n){
   return 1;
 }
 
+void test_range();
+void test_is_prime();
+void test_nth_prime();
+
+void test(){
+  test_range();
+  test_is_prime();
+  test_nth_prime();
+  printf("tests all DONE\n");
+}
+
+
 void test_range(){
-  int i, size = 1000;
+  int i, size = sieve_size(1000);
   struct sieve_t sv;
   init_sieve(&sv, size);
   fill_sieve(&sv);
@@ -54,7 +66,7 @@ void test_is_prime(){
 }
 
 void test_nth_prime(){
-  int size = 70000000;
+  int size = sieve_size(70000000);
   struct sieve_t sv;
   init_sieve(&sv, size);
   fill_sieve(&sv);
@@ -72,9 +84,3 @@ void test_nth_prime(){
 }
 
 
-void test(){
-  test_range();
-  test_is_prime();
-  test_nth_prime();
-  printf("tests all DONE\n");
-}

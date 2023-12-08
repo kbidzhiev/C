@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -Wall -Wextra -O2
 TARGET = a.out
 SRCS = main.c sieve.c hwe.c #tests.c
 OBJS = $(SRCS:.c=.o)

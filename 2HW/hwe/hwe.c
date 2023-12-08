@@ -34,23 +34,15 @@ void tozero(struct sieve_t *sv, unsigned long long j){
 }
 
 void fill_sieve(struct sieve_t *sv){
-  unsigned long long i, j;
+  unsigned long long i, j, size;
+  size = (sv->n);
   sv -> mod1[0] = 0x11;
 
-  for(i = 1; (i/(6*CHAR_BIT)) < (sv->n);++i)
+
+  for(i = 1; (i/(6*CHAR_BIT)) < size;++i)
     if(is_prime(sv, i))
-      for(j = i*i; (j/(6*CHAR_BIT)) < (sv->n); j+=i)
+      for(j = i*i; (j/(6*CHAR_BIT)) < size; j+=i)
         tozero(sv, j);
 }
 
-unsigned nth_prime(struct sieve_t *sv, unsigned long long N){
-  unsigned long long i;
-  for (i = 1; N>0; ++i){
-    if(is_prime(sv, i)){
-      //printf("%u is %uth prime\n", i, N);
-      --N;
-    };
-  }
-  return --i;
-}
 

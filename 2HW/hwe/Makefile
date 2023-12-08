@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g
-TARGET = hwe
-SRCS = main.c sieve.c hwe.c tests.c
+TARGET = a.out
+SRCS = main.c sieve.c hwe.c #tests.c
 OBJS = $(SRCS:.c=.o)
 
 $(TARGET): $(OBJS)

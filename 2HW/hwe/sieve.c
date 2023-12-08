@@ -1,12 +1,9 @@
-#include"sieve.h"
 #include<limits.h>
 #include<stdlib.h>
-
-struct sieve_t{
-  int n;
-  unsigned char *mod1;
-  unsigned char *mod5;
-};
+#include<math.h>
+#include<assert.h>
+#include"sieve.h"
+#include"hwe.h"
 
 unsigned sieve_size(unsigned N){
   double n = (double) N;
@@ -32,3 +29,13 @@ void free_sieve(struct sieve_t *sv){
   free(sv -> mod5);
 }
 
+unsigned nth_prime(struct sieve_t *sv, unsigned long long N){
+  unsigned long long i;
+  for (i = 1; N>0; ++i){
+    if(is_prime(sv, i)){
+      //printf("%u is %uth prime\n", i, N);
+      --N;
+    };
+  }
+  return --i;
+}

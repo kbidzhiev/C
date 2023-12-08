@@ -1,4 +1,4 @@
-# C-course form MIPT
+# C-course from MIPT
 
 problems: http://olymp1.vdi.mipt.ru
 

@@ -1,8 +1,11 @@
-# C
+# C-course form MIPT
 
-problems from MIPT
+problems: http://olymp1.vdi.mipt.ru
 
-problems : http://cs.mipt.ru/wp/?page id=7775
-Youtube : https://www.youtube.com/watch?v=7YhRFx-oyW4
-slides : http://cs.mipt.ru/wp/?page id=7775
+
+
+slides: http://cs.mipt.ru/wp/?page_id=7775
+
+Youtube : https://www.youtube.com/watch?v=7YhRFx-oyW4 
+
 supplementary materials : https://github.com/tilir/c-graduate

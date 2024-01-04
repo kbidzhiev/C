@@ -58,7 +58,7 @@ int main() {
   int *pol1, *pol2, *pol3;
   int i;
 
-  test();
+  test_karatsuba();
 
   if((2 != scanf("%d%d", &size1, &size2)) || (size1 != size2) ) {
     abort();

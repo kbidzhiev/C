@@ -20,7 +20,7 @@ void pol_mult_quadric(int *pol1, unsigned size1, int *pol2, unsigned size2, int 
 void pol_split(int *A, unsigned lenA, int *A1, int *A2) {
   unsigned degA = lenA - 1;
   unsigned degA2 = degA/2; //degA-degdiv;
-  unsigned shiftA1 = degA % 2;
+  unsigned shiftA1 = degA % 2; // degA == 2*k ?
   for(unsigned i = 0; i < lenA; ++i) {
     if(i <= degA2) {
       A2[i] = A[i];

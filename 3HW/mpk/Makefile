@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror=declaration-after-statement -Wunused-but-set-variable -O2
 TARGET = a.out
-SRCS = main.c tests.h
+SRCS = main.c tests.c
 OBJS = $(SRCS:.c=.o)
 
 $(TARGET): $(OBJS)

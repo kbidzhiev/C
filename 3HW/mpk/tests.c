@@ -1,9 +1,6 @@
-#ifndef tests
-#define tests
+#include"tests.h"
 #include<stdlib.h>
-
-
-void pol_split(int *A, unsigned lenA, int *A1, int *A2);
+#include<assert.h>
 
 void test_split() {
   int *A1, *A2, len;
@@ -28,8 +25,5 @@ void test_karatsuba() {
   test_split();
 }
 
-
-
-#endif
 
 

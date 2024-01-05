@@ -90,14 +90,15 @@ low_coeff(const struct Poly A) {
   return A2;
 }
 
-void poly_sum(struct Poly const A, struct Poly const B, struct Poly res) {
+void poly_sum(struct Poly const A, struct Poly const B, struct Poly *res) {
   unsigned i;
-  if ((A.len != B. len) && (B.len != res.len)) {
+  if (A.len != B. len) {
     abort();
   }
 
-  for(i = 0; i < res.len; ++i) {
-    res.p[i] = A.p[i] + B.p[i];
+  res -> len = A.len;
+  for(i = 0; i < res -> len; ++i) {
+    res -> p[i] = A.p[i] + B.p[i];
   }
 }
 
@@ -106,6 +107,9 @@ poly_mult_karatsuba(struct Poly A, struct Poly B) {
   struct Poly A1, A2, B1, B2;
   struct Poly res, res1, res2, res3;
 
+  if (A. len == 1) {
+    return A;
+  }
   A1 = high_coeff(A);
   A2 = low_coeff(A);
 
@@ -115,8 +119,8 @@ poly_mult_karatsuba(struct Poly A, struct Poly B) {
   res1 = poly_mult_karatsuba(A1, B1);
   res3 = poly_mult_karatsuba(A2, B2);
 
-  poly_sum(A1, A2, res1);
-  poly_sum(B1, B2, res2);
+  poly_sum(A1, A2, &res1);
+  poly_sum(B1, B2, &res2);
 
 
   free_Poly(&A1);
@@ -127,7 +131,9 @@ poly_mult_karatsuba(struct Poly A, struct Poly B) {
   free_Poly(&res1);
   free_Poly(&res2);
   free_Poly(&res3);
-  
+ 
+  res.len = 0;
+  res.p = NULL;
   return res;
 }
 

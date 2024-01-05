@@ -51,11 +51,31 @@ void test_split_qubic() {
   free_Poly(&A2);
 }
 
+void poly_sum(struct Poly const A, struct Poly const B, struct Poly *res);
 
+void test_sum(){
+  unsigned len = 5;
+  int pA[5] = {2, 4, 6, 8, 10};
+  int pB[5] = {1, 3, 5, 9, 11};
+  int pres[5] = {0, 0, 0, 0, 0};
+  struct Poly A = {len, pA};
+  struct Poly B = {len, pB};
+  struct Poly res = {len, pres};
+
+  poly_sum(A,B, &res);
+
+  assert(3 == res.p[0]);
+  assert(7 == res.p[1]);
+  assert(11 == res.p[2]);
+  assert(17 == res.p[3]);
+  assert(21 == res.p[4]);
+
+}
 
 void test_karatsuba() {
   test_split_quadric();
   test_split_qubic();
+  test_sum();
 
   printf("All tests are DONE\n");
 }

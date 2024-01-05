@@ -29,20 +29,6 @@ poly_mult_quadric(struct Poly lhs, struct Poly rhs) {
   return res;
 }
 
-void ppol_mult_quadric(int *pol1, unsigned size1, int *pol2, unsigned size2, int *pol3, unsigned size3) {
-  unsigned i, j, k;
-  for(k = 0; k < size3; ++k)
-    pol3[k] = 0;
-
-  for(j = 0; j < size2; ++j) {
-    k = j;
-    for(i = 0; i < size1; ++i) {
-      pol3[k] += pol2[j] * pol1[i];
-      ++k;
-    }
-  }
-}
-
 struct Poly
 high_coeff(const struct Poly A) {
   unsigned i;
@@ -91,7 +77,7 @@ low_coeff(const struct Poly A) {
 }
 
 struct Poly
-poly_sum(struct Poly const A, struct Poly const B) {
+poly_sum(const struct Poly A, const struct Poly B) {
   unsigned i;
   struct Poly res;
   if (A.len != B. len) {
@@ -110,15 +96,6 @@ poly_sum(struct Poly const A, struct Poly const B) {
   return res;
 }
 
-void copy_coeff(struct Poly a, struct Poly A, unsigned begin, unsigned end) {
-  if (A.len < end) {
-    printf("copy_coeff: A.len < end\n");
-    abort();
-  }
-  for(unsigned i = begin; i < end; ++i) {
-    A.p[i] = a.p[i-begin];
-  }
-}
 
 
 struct Poly
@@ -146,6 +123,18 @@ third_term(const struct Poly A, const struct Poly B) {
   return A2B2;
 }
 
+struct Poly
+add_high_low(const struct Poly A){
+  struct Poly A1, A2, addA1A2;
+  A1 = high_coeff(A);
+  A2 = low_coeff(A);
+  addA1A2 = poly_sum(A1,A2);
+
+  free_Poly(&A1);
+  free_Poly(&A2);
+  return addA1A2;
+}
+
 void subtract(struct Poly tmp, const struct Poly A1B1, const struct Poly A2B2){
   for(unsigned i = 0; i < tmp.len; ++i){
     tmp.p[i] = tmp.p[i] - A1B1.p[i] - A2B2.p[i];
@@ -153,64 +142,57 @@ void subtract(struct Poly tmp, const struct Poly A1B1, const struct Poly A2B2){
 }
 
 struct Poly
-second_term(const struct Poly A, const struct Poly B, const struct Poly res1_A1B1, const struct Poly res3_A2B2) {
-  struct Poly A1, A2, B1, B2;
-  struct Poly addA1A2, addB1B2, tmp;
-  struct Poly res;
+second_term(const struct Poly A, const struct Poly B, const struct Poly A1B1, const struct Poly A2B2) {
+  struct Poly addA1A2, addB1B2, res;
+  addA1A2 = add_high_low(A);
+  addB1B2 = add_high_low(B);
 
-  A1 = high_coeff(A);
-  B1 = high_coeff(B);
-  A2 = low_coeff(A);
-  B2 = low_coeff(B);
-
-  addA1A2 = poly_sum(A1, A2);
-  addB1B2 = poly_sum(B1, B2);
-  tmp = poly_mult_karatsuba(addA1A2, addB1B2);
-
-  subtract(tmp, A1B1, A2B2);
-
-  free_Poly(&A1);
-  free_Poly(&A2);
-  free_Poly(&B1);
-  free_Poly(&B2);
+  res = poly_mult_karatsuba(addA1A2, addB1B2);
+  subtract(res, A1B1, A2B2);
 
   free_Poly(&addA1A2);
   free_Poly(&addB1B2);
-  free_Poly(&tmp);
   return res;
+}
+
+void copy_coeff(struct Poly a, struct Poly A, unsigned begin, unsigned end) {
+  if (A.len < end) {
+    printf("copy_coeff: A.len < end\n");
+    abort();
+  }
+  for(unsigned i = begin; i < end; ++i) {
+    A.p[i] = a.p[i-begin];
+  }
 }
 
 struct Poly
 poly_mult_karatsuba(struct Poly A, struct Poly B) {
-  struct Poly res, res1_A1B1, res2, res3_A2B2;
+  struct Poly res, A1B1, term2, A2B2;
 
   if (A. len == 1) {
-    return A;
+    res = poly_mult_quadratic(A, B);
+    return res;
   }
 
-  res1_A1B1 = first_term(A, B);
-  res3_A2B2 = third_term(A, B);
-  res2 = second_term(A, B, res1_A1B1, res3_A2B2);
+  A1B1 = first_term(A, B);
+  A2B2 = third_term(A, B);
+  term2 = second_term(A, B, A1B1, A2B2);
 
+  res.len = A2B2.len + term2.len + A1B1.len;
+  res.p = malloc(re.len * sizeof(int));
+  if(NULL == res.p) {
+    printf("poly_mult_karatsuba: mem not allocated\n");
+    abort();
+  }
 
-  copy_coeff(res3, res, 0, res3.len);
-  poly_sum(A1, A2, &res1);
-  poly_sum(B1, B2, &res2);
+  copy_coeff(A2B2,  res, 0, A2B2.len);
+  copy_coeff(term2, res, A2B2.len, A2B2.len + term2.len);
+  copy_coeff(A1B1,  res, A2B2.len + term2.len, res.len) ;
 
-  res2 = poly_mult_karatsuba(res1, res3);
+  free_Poly(&A1B1);
+  free_Poly(&term2);
+  free_Poly(&A2B2);
 
-
-  free_Poly(&A1);
-  free_Poly(&A2);
-  free_Poly(&B1);
-  free_Poly(&B2);
-
-  free_Poly(&res1);
-  free_Poly(&res2);
-  free_Poly(&res3);
- 
-  res.len = 0;
-  res.p = NULL;
   return res;
 }
 

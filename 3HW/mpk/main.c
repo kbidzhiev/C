@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<assert.h>
-#include"tests.h"
+//#include"tests.h"
 
 struct Poly {
   unsigned len;
@@ -9,7 +9,7 @@ struct Poly {
 };
 
 struct Poly
-allocate_Poly(unsigned len){
+allocate_Poly(unsigned len) {
   struct Poly res = {len, NULL};
   res.p = calloc(len, sizeof(int));
   if (NULL == res.p) {
@@ -133,19 +133,19 @@ third_term(const struct Poly A, const struct Poly B) {
 }
 
 struct Poly
-add_high_low(const struct Poly A){
+add_high_low(const struct Poly A) {
   struct Poly A1, A2, addA1A2;
   A1 = high_coeff(A);
   A2 = low_coeff(A);
-  addA1A2 = Poly_sum(A1,A2);
+  addA1A2 = Poly_sum(A1, A2);
 
   free_Poly(&A1);
   free_Poly(&A2);
   return addA1A2;
 }
 
-void subtract(struct Poly tmp, const struct Poly A1B1, const struct Poly A2B2){
-  for(unsigned i = 0; i < tmp.len; ++i){
+void subtract(struct Poly tmp, const struct Poly A1B1, const struct Poly A2B2) {
+  for(unsigned i = 0; i < tmp.len; ++i) {
     tmp.p[i] = tmp.p[i] - A1B1.p[i] - A2B2.p[i];
   }
 }
@@ -190,9 +190,9 @@ Poly_mult_karatsuba(const struct Poly A, const struct Poly B) {
   A2B2 = third_term(A, B);
   term2 = second_term(A, B, A1B1, A2B2);
 
-  copy_coeff(A2B2,  res, 0, A2B2.len);
+  copy_coeff(A2B2, res, 0, A2B2.len);
   copy_coeff(term2, res, A.len/2, A.len/2 + term2.len);
-  copy_coeff(A1B1,  res, A.len, res.len) ;
+  copy_coeff(A1B1, res, A.len, res.len) ;
 
   free_Poly(&A1B1);
   free_Poly(&term2);
@@ -202,12 +202,13 @@ Poly_mult_karatsuba(const struct Poly A, const struct Poly B) {
 }
 
 void canonic_form(struct Poly *A) {
-  unsigned degA = (A -> len) - 1; //size is length of pol
+  int degA = (A -> len) - 1; //size is length of pol
   for (; degA >= 0; --degA) {
-    if ((A ->p[degA]) != 0)
+    if ((A ->p[degA]) != 0) {
       // pol[degA] is first nonzero elem,
       A -> len = degA + 1;
       break;
+    }
   }
 }
 

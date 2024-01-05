@@ -90,11 +90,21 @@ low_coeff(const struct Poly A) {
   return A2;
 }
 
+void poly_sum(struct Poly const A, struct Poly const B, struct Poly res) {
+  unsigned i;
+  if ((A.len != B. len) && (B.len != res.len)) {
+    abort();
+  }
 
+  for(i = 0; i < res.len; ++i) {
+    res.p[i] = A.p[i] + B.p[i];
+  }
+}
 
-void poly_mult_karatsuba(struct Poly A, struct Poly B) {
-  //unsigned degA = A.len - 1;
+struct Poly
+poly_mult_karatsuba(struct Poly A, struct Poly B) {
   struct Poly A1, A2, B1, B2;
+  struct Poly res, res1, res2, res3;
 
   A1 = high_coeff(A);
   A2 = low_coeff(A);
@@ -102,21 +112,33 @@ void poly_mult_karatsuba(struct Poly A, struct Poly B) {
   B1 = high_coeff(B);
   B2 = low_coeff(B);
 
+  res1 = poly_mult_karatsuba(A1, B1);
+  res3 = poly_mult_karatsuba(A2, B2);
+
+  poly_sum(A1, A2, res1);
+  poly_sum(B1, B2, res2);
+
+
   free_Poly(&A1);
   free_Poly(&A2);
   free_Poly(&B1);
   free_Poly(&B2);
+
+  free_Poly(&res1);
+  free_Poly(&res2);
+  free_Poly(&res3);
+  
+  return res;
 }
 
-unsigned canonic_form(int *pol, unsigned size) {
-  --size; //size is length of pol
-  for (; size >= 0; --size) {
-    if (pol[size] != 0)
-      // pol[size] is first nonzero elem,
-      // i.e. size of arr is size+1
-      return ++size;
+void canonic_form(struct Poly *A) {
+  unsigned degA = (A -> len) - 1; //size is length of pol
+  for (; degA >= 0; --degA) {
+    if ((A ->p[degA]) != 0)
+      // pol[degA] is first nonzero elem,
+      A -> len = degA + 1;
+      break;
   }
-  return 0;
 }
 
 int main() {
@@ -147,7 +169,7 @@ int main() {
   }
 
   ppol_mult_quadric(pol1, size1, pol2, size2, pol3, size3);
-  size3 = canonic_form(pol3, size3);
+  //size3 = canonic_form(pol3, size3);
 
   for(i = 0; i < size3; ++i) {
     printf("%d ", pol3[i]);

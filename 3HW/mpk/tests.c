@@ -30,8 +30,6 @@ void test_split_qubic() {
   assert(A1.p[0] == 3 && A1.p[1] == 1); // 1x + 3
   assert(A2.p[0] == 7 && A2.p[1] == 4); // 4x + 7
 
-  free_Poly(&A1);
-  free_Poly(&A2);
 
   printf("2) test_split_qubic\n");
 }
@@ -43,10 +41,9 @@ void test_sum(){
   unsigned len = 5;
   int pA[5] = {2, 4, 6, 8, 10};
   int pB[5] = {1, 3, 5, 9, 11};
-  int pres[5] = {0, 0, 0, 0, 0};
   struct Poly A = {len, pA};
   struct Poly B = {len, pB};
-  struct Poly res = {len, pres};
+  struct Poly res = {len, NULL};
 
   res = Poly_sum(A,B);
 
@@ -56,6 +53,7 @@ void test_sum(){
   assert(17 == res.p[3]);
   assert(21 == res.p[4]);
 
+  free_Poly(&res);
   printf("3) test_sum\n");
 }
 
@@ -99,6 +97,8 @@ void test_mult_quadric() {
   assert(21 == C.p[0]);
   assert(19 == C.p[1]);
   assert(4  == C.p[2]);
+
+  free_Poly(&C);
   printf("5) test_mult_quadric\n");
 }
 
@@ -122,6 +122,9 @@ void test_mult_karatsuba() {
     //printf("%d\t%d\n", res1.p[i], res2.p[i]);
     assert(res1.p[i] == res2.p[i]);
   }
+  free_Poly(&res1);
+  free_Poly(&res2);
+
   printf("6) test Poly_mult_karatsuba\n");
 }
 

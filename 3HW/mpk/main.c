@@ -83,7 +83,6 @@ Poly_sum(const struct Poly A, const struct Poly B) {
 struct Poly
 Poly_mult_karatsuba(struct Poly A, struct Poly B);
 
-
 struct Poly
 add_high_low(const struct Poly A1, const struct Poly A2) {
   struct Poly addA1A2;
@@ -139,10 +138,9 @@ Poly_mult_karatsuba(const struct Poly A, const struct Poly B) {
   res.len = A.len + B.len - 1;
   res = allocate_Poly(res.len);
 
-
   A1 = high_coeff(A);
-  B1 = high_coeff(B);
   A2 = low_coeff(A);
+  B1 = high_coeff(B);
   B2 = low_coeff(B);
   //A1B1 = first_term(A, B);
   //A2B2 = third_term(A, B);

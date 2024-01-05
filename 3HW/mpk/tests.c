@@ -31,7 +31,7 @@ void test_split_quadric() {
 
   free_Poly(&A1);
   free_Poly(&A2);
-  printf("test_split_quadric\n");
+  printf("1) test_split_quadric\n");
 }
 
 void test_split_qubic() {
@@ -51,10 +51,11 @@ void test_split_qubic() {
   free_Poly(&A1);
   free_Poly(&A2);
 
-  printf("test_split_qubic\n");
+  printf("2) test_split_qubic\n");
 }
 
-void poly_sum(struct Poly const A, struct Poly const B, struct Poly *res);
+struct Poly
+Poly_sum(const struct Poly A, const struct Poly B);
 
 void test_sum(){
   unsigned len = 5;
@@ -65,7 +66,7 @@ void test_sum(){
   struct Poly B = {len, pB};
   struct Poly res = {len, pres};
 
-  poly_sum(A,B, &res);
+  res = Poly_sum(A,B);
 
   assert(3 == res.p[0]);
   assert(7 == res.p[1]);
@@ -73,7 +74,7 @@ void test_sum(){
   assert(17 == res.p[3]);
   assert(21 == res.p[4]);
 
-  printf("test_sum\n");
+  printf("3) test_sum\n");
 }
 
 void copy_coeff(struct Poly a, struct Poly A, unsigned begin, unsigned end);
@@ -98,7 +99,48 @@ void test_copy_coeff() {
   assert(2 == A.p[5]);
   assert(1 == A.p[6]);
 
-  printf("test_coeff\n");
+  printf("4) test_coeff\n");
+}
+
+struct Poly
+Poly_mult_quadric(struct Poly lhs, struct Poly rhs);
+void test_mult_quadric() {
+  struct Poly A, B, C;
+  int pA[2] = {3, 1};
+  int pB[2] = {7, 4};
+  A.len = 2;
+  A.p = pA;
+  B.len = 2;
+  B.p = pB;
+
+  C = Poly_mult_quadric(A, B);
+  assert(21 == C.p[0]);
+  assert(19 == C.p[1]);
+  assert(4  == C.p[2]);
+  printf("5) test_mult_quadric\n");
+}
+
+
+struct Poly
+Poly_mult_karatsuba(const struct Poly A, const struct Poly B);
+void test_mult_karatsuba() {
+  unsigned i;
+  struct Poly A, B, res1, res2;
+  int pA[4] = {1, 2, 1, 1};
+  int pB[4] = {2, 7, 3, 1};
+  A.len = 4;
+  A.p = pA;
+  B.len = 4;
+  B.p = pB;
+
+  res1 = Poly_mult_karatsuba(A, B);
+  res2 = Poly_mult_quadric(A, B);
+  printf("Kar\tquadr:\n");
+  for(i = 0; i < res2.len; ++i) {
+    printf("%d\t%d\n", res1.p[i], res2.p[i]);
+    //assert(res1.p[i] == res2.p[i]);
+  }
+  printf("6) test Poly_mult_karatsuba\n");
 }
 
 void test_karatsuba() {
@@ -106,6 +148,8 @@ void test_karatsuba() {
   test_split_qubic();
   test_sum();
   test_copy_coeff();
+  test_mult_quadric();
+  test_mult_karatsuba();
 
   printf("All tests are DONE\n");
 }

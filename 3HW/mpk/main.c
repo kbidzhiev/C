@@ -8,13 +8,24 @@ struct Poly {
   int *p;
 };
 
+struct Poly
+allocate_Poly(unsigned len){
+  struct Poly res = {len, NULL};
+  res.p = malloc(len * sizeof(int));
+  if (NULL == res.p) {
+    printf("allocate_Poly: mem not allocated\n");
+    abort();
+  }
+  return res;
+}
+
 void free_Poly(struct Poly *pol) {
   pol -> len = 0;
   free(pol -> p);
 }
 
 struct Poly
-poly_mult_quadric(struct Poly lhs, struct Poly rhs) {
+Poly_mult_quadric(struct Poly lhs, struct Poly rhs) {
   unsigned i, j, k;
   struct Poly res = {lhs.len + rhs.len - 1, NULL};
   res.p = calloc(res.len, sizeof(int));
@@ -77,17 +88,17 @@ low_coeff(const struct Poly A) {
 }
 
 struct Poly
-poly_sum(const struct Poly A, const struct Poly B) {
+Poly_sum(const struct Poly A, const struct Poly B) {
   unsigned i;
   struct Poly res;
   if (A.len != B. len) {
-    printf("poly_sum: A.len != B.len\n");
+    printf("Poly_sum: A.len != B.len\n");
     abort();
   }
   res.len = A.len;
   res.p = malloc(res.len * sizeof(int));
   if (NULL == res.p) {
-    printf("poly_sum: mem not allocated\n");
+    printf("Poly_sum: mem not allocated\n");
     abort();
   }
   for(i = 0; i < res.len; ++i) {
@@ -96,17 +107,15 @@ poly_sum(const struct Poly A, const struct Poly B) {
   return res;
 }
 
-
-
 struct Poly
-poly_mult_karatsuba(struct Poly A, struct Poly B);
+Poly_mult_karatsuba(struct Poly A, struct Poly B);
 
 struct Poly
 first_term(const struct Poly A, const struct Poly B) {
   struct Poly A1, B1, A1B1;
   A1 = high_coeff(A);
   B1 = high_coeff(B);
-  A1B1 = poly_mult_karatsuba(A1, B1);
+  A1B1 = Poly_mult_karatsuba(A1, B1);
   free_Poly(&A1);
   free_Poly(&B1);
   return A1B1;
@@ -117,7 +126,7 @@ third_term(const struct Poly A, const struct Poly B) {
   struct Poly A2, B2, A2B2;
   A2 = low_coeff(A);
   B2 = low_coeff(B);
-  A2B2 = poly_mult_karatsuba(A2, B2);
+  A2B2 = Poly_mult_karatsuba(A2, B2);
   free_Poly(&A2);
   free_Poly(&B2);
   return A2B2;
@@ -128,7 +137,7 @@ add_high_low(const struct Poly A){
   struct Poly A1, A2, addA1A2;
   A1 = high_coeff(A);
   A2 = low_coeff(A);
-  addA1A2 = poly_sum(A1,A2);
+  addA1A2 = Poly_sum(A1,A2);
 
   free_Poly(&A1);
   free_Poly(&A2);
@@ -147,7 +156,7 @@ second_term(const struct Poly A, const struct Poly B, const struct Poly A1B1, co
   addA1A2 = add_high_low(A);
   addB1B2 = add_high_low(B);
 
-  res = poly_mult_karatsuba(addA1A2, addB1B2);
+  res = Poly_mult_karatsuba(addA1A2, addB1B2);
   subtract(res, A1B1, A2B2);
 
   free_Poly(&addA1A2);
@@ -157,7 +166,7 @@ second_term(const struct Poly A, const struct Poly B, const struct Poly A1B1, co
 
 void copy_coeff(struct Poly a, struct Poly A, unsigned begin, unsigned end) {
   if (A.len < end) {
-    printf("copy_coeff: A.len < end\n");
+    printf("copy_coeff: A.len < end\n (%d < %d)", A.len, end);
     abort();
   }
   for(unsigned i = begin; i < end; ++i) {
@@ -166,24 +175,20 @@ void copy_coeff(struct Poly a, struct Poly A, unsigned begin, unsigned end) {
 }
 
 struct Poly
-poly_mult_karatsuba(struct Poly A, struct Poly B) {
+Poly_mult_karatsuba(const struct Poly A, const struct Poly B) {
   struct Poly res, A1B1, term2, A2B2;
 
-  if (A. len == 1) {
-    res = poly_mult_quadratic(A, B);
+  if (A.len == 1) {
+    res = Poly_mult_quadric(A, B);
     return res;
   }
+
+  res.len = A.len + B.len - 1;
+  res = allocate_Poly(res.len);
 
   A1B1 = first_term(A, B);
   A2B2 = third_term(A, B);
   term2 = second_term(A, B, A1B1, A2B2);
-
-  res.len = A2B2.len + term2.len + A1B1.len;
-  res.p = malloc(re.len * sizeof(int));
-  if(NULL == res.p) {
-    printf("poly_mult_karatsuba: mem not allocated\n");
-    abort();
-  }
 
   copy_coeff(A2B2,  res, 0, A2B2.len);
   copy_coeff(term2, res, A2B2.len, A2B2.len + term2.len);
@@ -207,42 +212,34 @@ void canonic_form(struct Poly *A) {
 }
 
 int main() {
-  int size1, size2, size3;
-  int *pol1, *pol2, *pol3;
-  int i;
-
+  unsigned i;
+  struct Poly A, B, C;
   test_karatsuba();
 
-  if((2 != scanf("%d%d", &size1, &size2)) || (size1 != size2) ) {
-    abort();
-  }
-  size3 = (size1 - 1) + (size2 - 1) + 1;
-
-  pol1 = malloc(size1*sizeof(int));
-  pol2 = malloc(size2*sizeof(int));
-  pol3 = malloc(size3*sizeof(int));
-  if (NULL == pol1 || NULL == pol2) {
+  if((2 != scanf("%d%d", &A.len, &B.len)) || (A.len != B.len) ) {
     abort();
   }
 
-  for(i = 0; i < size1; ++i) {
-    scanf("%d", (pol1+i));
-  }
+  A = allocate_Poly(A.len);
+  B = allocate_Poly(B.len);
 
-  for(i = 0; i < size2; ++i) {
-    scanf("%d", (pol2+i));
+  for(i = 0; i < A.len; ++i) {
+    scanf("%d", &(A.p[i]));
   }
+  for(i = 0; i < B.len; ++i) {
+    scanf("%d", &(B.p[i]));
+  }
+  C = Poly_mult_karatsuba(A, B);
 
-  ppol_mult_quadric(pol1, size1, pol2, size2, pol3, size3);
   //size3 = canonic_form(pol3, size3);
 
-  for(i = 0; i < size3; ++i) {
-    printf("%d ", pol3[i]);
+  for(i = 0; i < C.len; ++i) {
+    printf("%d ", C.p[i]);
   }
   printf("\n");
 
-  free(pol1);
-  free(pol2);
-  free(pol3);
+  free_Poly(&A);
+  free_Poly(&B);
+  free_Poly(&C);
   return 0;
 }

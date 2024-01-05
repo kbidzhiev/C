@@ -93,15 +93,15 @@ low_coeff(const struct Poly A) {
 
 
 void poly_mult_karatsuba(struct Poly A, struct Poly B) {
-  unsigned degA = A.len - 1;
-  unsigned degA1 = degA/2;
+  //unsigned degA = A.len - 1;
   struct Poly A1, A2, B1, B2;
 
   A1 = high_coeff(A);
   A2 = low_coeff(A);
-  B1 = high_coeff(A);
-  B2 = low_coeff(A);
-  
+
+  B1 = high_coeff(B);
+  B2 = low_coeff(B);
+
   free_Poly(&A1);
   free_Poly(&A2);
   free_Poly(&B1);
@@ -146,7 +146,7 @@ int main() {
     scanf("%d", (pol2+i));
   }
 
-  pol_mult_quadric(pol1, size1, pol2, size2, pol3, size3);
+  ppol_mult_quadric(pol1, size1, pol2, size2, pol3, size3);
   size3 = canonic_form(pol3, size3);
 
   for(i = 0; i < size3; ++i) {

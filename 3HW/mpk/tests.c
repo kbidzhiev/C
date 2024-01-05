@@ -1,5 +1,6 @@
 #include"tests.h"
 #include<stdlib.h>
+#include<stdio.h>
 #include<assert.h>
 
 struct Poly {
@@ -55,6 +56,8 @@ void test_split_qubic() {
 void test_karatsuba() {
   test_split_quadric();
   test_split_qubic();
+
+  printf("All tests are DONE\n");
 }
 
 

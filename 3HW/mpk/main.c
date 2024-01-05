@@ -136,9 +136,21 @@ void fill_terms(const struct Poly A, const struct Poly B, struct Poly *A1B1, str
 }
 
 void merge_coeff(struct Poly res, const struct Poly A1B1, const struct Poly term2, const struct Poly A2B2) {
-  copy_coeff(A2B2, res, 0, A2B2.len);
-  copy_coeff(term2, res, A2B2.len - 1, A2B2.len + term2.len);
-  copy_coeff(A1B1, res, 2 * (A2B2.len - 1), res.len) ;
+  unsigned i;
+  for(i = 0; i < res.len; ++i) {
+    if((i >= 0) && (i < A2B2.len)) {
+      res.p[i] += A2B2.p[i];
+    }
+    if((i >= (A2B2.len - 1)) && (i < (2 * A2B2.len))) {
+      res.p[i] += term2.p[i - (A2B2.len - 1)];
+    }
+    if((i >= 2 * (A2B2.len - 1)) && (i < res.len) ) {
+      res.p[i] += A1B1.p[i - 2 * (A2B2.len - 1)];
+    }
+  }
+  //copy_coeff(A2B2, res, 0, A2B2.len);
+  //copy_coeff(term2, res, A2B2.len - 1, A2B2.len + term2.len);
+  //copy_coeff(A1B1, res, 2 * (A2B2.len - 1), res.len) ;
 }
 
 struct Poly

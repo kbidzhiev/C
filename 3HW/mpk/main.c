@@ -15,7 +15,7 @@ struct Poly {
 struct Poly
 allocate_Poly(unsigned len) {
   struct Poly res = {len, NULL};
-  res.p = calloc(len, sizeof(int));
+  res.p = malloc(len * sizeof(int));
   if (NULL == res.p) {
     printf("allocate_Poly: mem not allocated\n");
     abort();
@@ -136,27 +136,26 @@ Poly_mult_karatsuba(const struct Poly A, const struct Poly B) {
   }
 
   res.len = A.len + B.len - 1;
-  res = allocate_Poly(res.len);
+  res.p = calloc(res.len, sizeof(int));
+  if(NULL == res.p) {
+    printf("Poly_mult_karatsuba: mem not allocated\n");
+    abort();
+  }
 
   A1 = high_coeff(A);
   A2 = low_coeff(A);
   B1 = high_coeff(B);
   B2 = low_coeff(B);
-  //A1B1 = first_term(A, B);
-  //A2B2 = third_term(A, B);
 
   A1B1 = Poly_mult_karatsuba(A1, B1);
   A2B2 = Poly_mult_karatsuba(A2, B2);
   term2 = second_term(A1, A2, B1, B2, A1B1, A2B2);
 
+  
   copy_coeff(A2B2, res, 0, A2B2.len);
   copy_coeff(term2, res, A.len/2, A.len/2 + term2.len);
   copy_coeff(A1B1, res, A.len, res.len) ;
 
-  //free_Poly(&A1);
-  //free_Poly(&B1);
-  //free_Poly(&A2);
-  //free_Poly(&B2);
   free_Poly(&A1B1);
   free_Poly(&term2);
   free_Poly(&A2B2);

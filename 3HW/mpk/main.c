@@ -176,7 +176,7 @@ void copy_coeff(struct Poly a, struct Poly A, unsigned begin, unsigned end) {
 
 struct Poly
 Poly_mult_karatsuba(const struct Poly A, const struct Poly B) {
-  struct Poly res, A1B1, term2, A2B2;
+  struct Poly res, A1, A2, B1, B2, A1B1, term2, A2B2;
 
   if (A.len == 2) {
     res = Poly_mult_quadric(A, B);
@@ -186,14 +186,26 @@ Poly_mult_karatsuba(const struct Poly A, const struct Poly B) {
   res.len = A.len + B.len - 1;
   res = allocate_Poly(res.len);
 
-  A1B1 = first_term(A, B);
-  A2B2 = third_term(A, B);
+
+  A1 = high_coeff(A);
+  B1 = high_coeff(B);
+  A2 = low_coeff(A);
+  B2 = low_coeff(B);
+  //A1B1 = first_term(A, B);
+  //A2B2 = third_term(A, B);
+
+  A1B1 = Poly_mult_karatsuba(A1, B1);
+  A2B2 = Poly_mult_karatsuba(A2, B2);
   term2 = second_term(A, B, A1B1, A2B2);
 
   copy_coeff(A2B2, res, 0, A2B2.len);
   copy_coeff(term2, res, A.len/2, A.len/2 + term2.len);
   copy_coeff(A1B1, res, A.len, res.len) ;
 
+  free_Poly(&A1);
+  free_Poly(&B1);
+  free_Poly(&A2);
+  free_Poly(&B2);
   free_Poly(&A1B1);
   free_Poly(&term2);
   free_Poly(&A2B2);

@@ -1,7 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<assert.h>
-//#include"tests.h"
+
+#define test 1
+#if test
+#include"tests.h"
+#endif
 
 struct Poly {
   unsigned len;
@@ -42,48 +46,17 @@ Poly_mult_quadric(struct Poly lhs, struct Poly rhs) {
 
 struct Poly
 high_coeff(const struct Poly A) {
-  unsigned i;
   unsigned degA = A.len - 1;
   unsigned degA1 = degA/2;
-  unsigned shiftA1 = degA % 2; // degA == 2*k ?
-  struct Poly A1 = {degA1 + 1, NULL};
-
-  A1.p = calloc(A1.len, sizeof(int));
-  if (NULL == A1.p) {
-    printf("high_coeff: mem not allocated\n");
-    abort();
-  }
-
-  for(i = A1.len; i < A.len; ++i) {
-    //shiftA1 is requred to have degA1 == degA2
-    //simply it makes constant term of the A1 polynomial == 0
-    //Examples of A = A1*x + A2:
-    // x2 + 2x + 1 == (x + 0)*x + (2x+1)
-    // x3 + 3x2 + 4x + 7 == (x + 3x)*x2 + (4x + 7)
-    A1.p[i-degA1-shiftA1] = A.p[i];
-  }
-  if (shiftA1 == 0) {
-    A1.p[0] = 0;
-  }
+  struct Poly A1 = {degA1 + 1, A.p + degA1 + 1};
   return A1;
 }
 
 struct Poly
 low_coeff(const struct Poly A) {
-  unsigned i;
   unsigned degA = A.len - 1;
   unsigned degA2 = degA/2;
-  struct Poly A2 = {degA2 + 1, NULL};
-
-  A2.p = calloc(A2.len, sizeof(int));
-  if (NULL == A2.p) {
-    printf("low_coeff: mem not allocated\n");
-    abort();
-  }
-
-  for(i = 0; i < A2.len; ++i) {
-    A2.p[i] = A.p[i];
-  }
+  struct Poly A2 = {degA2 + 1, A.p};
   return A2;
 }
 
@@ -110,37 +83,11 @@ Poly_sum(const struct Poly A, const struct Poly B) {
 struct Poly
 Poly_mult_karatsuba(struct Poly A, struct Poly B);
 
-struct Poly
-first_term(const struct Poly A, const struct Poly B) {
-  struct Poly A1, B1, A1B1;
-  A1 = high_coeff(A);
-  B1 = high_coeff(B);
-  A1B1 = Poly_mult_karatsuba(A1, B1);
-  free_Poly(&A1);
-  free_Poly(&B1);
-  return A1B1;
-}
 
 struct Poly
-third_term(const struct Poly A, const struct Poly B) {
-  struct Poly A2, B2, A2B2;
-  A2 = low_coeff(A);
-  B2 = low_coeff(B);
-  A2B2 = Poly_mult_karatsuba(A2, B2);
-  free_Poly(&A2);
-  free_Poly(&B2);
-  return A2B2;
-}
-
-struct Poly
-add_high_low(const struct Poly A) {
-  struct Poly A1, A2, addA1A2;
-  A1 = high_coeff(A);
-  A2 = low_coeff(A);
+add_high_low(const struct Poly A1, const struct Poly A2) {
+  struct Poly addA1A2;
   addA1A2 = Poly_sum(A1, A2);
-
-  free_Poly(&A1);
-  free_Poly(&A2);
   return addA1A2;
 }
 
@@ -151,10 +98,12 @@ void subtract(struct Poly tmp, const struct Poly A1B1, const struct Poly A2B2) {
 }
 
 struct Poly
-second_term(const struct Poly A, const struct Poly B, const struct Poly A1B1, const struct Poly A2B2) {
+second_term(const struct Poly A1, const struct Poly A2,
+            const struct Poly B1, const struct Poly B2,
+            const struct Poly A1B1, const struct Poly A2B2) {
   struct Poly addA1A2, addB1B2, res;
-  addA1A2 = add_high_low(A);
-  addB1B2 = add_high_low(B);
+  addA1A2 = add_high_low(A1, A2);
+  addB1B2 = add_high_low(B1, B2);
 
   res = Poly_mult_karatsuba(addA1A2, addB1B2);
   subtract(res, A1B1, A2B2);
@@ -179,7 +128,11 @@ Poly_mult_karatsuba(const struct Poly A, const struct Poly B) {
   struct Poly res, A1, A2, B1, B2, A1B1, term2, A2B2;
 
   if (A.len == 2) {
-    res = Poly_mult_quadric(A, B);
+    res = allocate_Poly(3);
+    res.p[0] = A.p[0] * B.p[0];
+    res.p[1] = A.p[0] * B.p[1] + A.p[1] * B.p[0];
+    res.p[2] = A.p[1] * B.p[1];
+    //res = Poly_mult_quadric(A, B);
     return res;
   }
 
@@ -196,16 +149,16 @@ Poly_mult_karatsuba(const struct Poly A, const struct Poly B) {
 
   A1B1 = Poly_mult_karatsuba(A1, B1);
   A2B2 = Poly_mult_karatsuba(A2, B2);
-  term2 = second_term(A, B, A1B1, A2B2);
+  term2 = second_term(A1, A2, B1, B2, A1B1, A2B2);
 
   copy_coeff(A2B2, res, 0, A2B2.len);
   copy_coeff(term2, res, A.len/2, A.len/2 + term2.len);
   copy_coeff(A1B1, res, A.len, res.len) ;
 
-  free_Poly(&A1);
-  free_Poly(&B1);
-  free_Poly(&A2);
-  free_Poly(&B2);
+  //free_Poly(&A1);
+  //free_Poly(&B1);
+  //free_Poly(&A2);
+  //free_Poly(&B2);
   free_Poly(&A1B1);
   free_Poly(&term2);
   free_Poly(&A2B2);
@@ -227,8 +180,9 @@ void canonic_form(struct Poly *A) {
 int main() {
   unsigned i;
   struct Poly A, B, C;
-  //test_karatsuba();
-
+#if test
+  test_karatsuba();
+#endif
   if((2 != scanf("%d%d", &A.len, &B.len)) || (A.len != B.len) ) {
     abort();
   }

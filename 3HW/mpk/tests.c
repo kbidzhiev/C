@@ -31,6 +31,7 @@ void test_split_quadric() {
 
   free_Poly(&A1);
   free_Poly(&A2);
+  printf("test_split_quadric\n");
 }
 
 void test_split_qubic() {
@@ -49,6 +50,8 @@ void test_split_qubic() {
 
   free_Poly(&A1);
   free_Poly(&A2);
+
+  printf("test_split_qubic\n");
 }
 
 void poly_sum(struct Poly const A, struct Poly const B, struct Poly *res);
@@ -70,12 +73,39 @@ void test_sum(){
   assert(17 == res.p[3]);
   assert(21 == res.p[4]);
 
+  printf("test_sum\n");
+}
+
+void copy_coeff(struct Poly a, struct Poly A, unsigned begin, unsigned end);
+
+void test_copy_coeff() {
+  unsigned len = 7;
+  int pA[7] = {0, 0, 0, 0, 0, 0 , 0};
+  int pA1[4] = {7, 4, 3, 1};
+  int pA2[3] = {1, 2, 1};
+  struct Poly A = {len, pA};
+  struct Poly A1 = {4, pA1};
+  struct Poly A2 = {3, pA2};
+
+  copy_coeff(A1, A, 0, A1.len);
+  copy_coeff(A2, A, A1.len, A1.len + A2.len);
+
+  assert(7 == A.p[0]);
+  assert(4 == A.p[1]);
+  assert(3 == A.p[2]);
+  assert(1 == A.p[3]);
+  assert(1 == A.p[4]);
+  assert(2 == A.p[5]);
+  assert(1 == A.p[6]);
+
+  printf("test_coeff\n");
 }
 
 void test_karatsuba() {
   test_split_quadric();
   test_split_qubic();
   test_sum();
+  test_copy_coeff();
 
   printf("All tests are DONE\n");
 }

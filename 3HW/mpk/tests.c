@@ -117,9 +117,9 @@ void test_mult_karatsuba() {
 
   res1 = Poly_mult_karatsuba(A, B);
   res2 = Poly_mult_quadric(A, B);
-  //printf("Kar\tquadr:\n");
+  printf("Kar\tquadr:\n");
   for(i = 0; i < res2.len; ++i) {
-    //printf("%d\t%d\n", res1.p[i], res2.p[i]);
+    printf("%d\t%d\n", res1.p[i], res2.p[i]);
     assert(res1.p[i] == res2.p[i]);
   }
   free_Poly(&res1);

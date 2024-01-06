@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<assert.h>
 
-#define test 1
+#define test 0
 #if test
 #include"tests.h"
 #endif
@@ -136,16 +136,17 @@ void fill_terms(const struct Poly A, const struct Poly B, struct Poly *A1B1, str
 }
 
 void merge_coeff(struct Poly res, const struct Poly A1B1, const struct Poly term2, const struct Poly A2B2) {
+  unsigned divA = (A1B1.len + 1)/2;
   unsigned i;
   for(i = 0; i < res.len; ++i) {
     if((i >= 0) && (i < A2B2.len)) {
       res.p[i] += A2B2.p[i];
     }
-    if((i >= (A2B2.len - 1)) && (i < (2 * A2B2.len))) {
-      res.p[i] += term2.p[i - (A2B2.len - 1)];
+    if((i >= (divA)) && (i < (divA + term2.len))) {
+      res.p[i] += term2.p[i - divA];
     }
-    if((i >= 2 * (A2B2.len - 1)) && (i < res.len) ) {
-      res.p[i] += A1B1.p[i - 2 * (A2B2.len - 1)];
+    if((i >= 2 * divA) && (i < res.len) ) {
+      res.p[i] += A1B1.p[i - 2 * (divA)];
     }
   }
   //copy_coeff(A2B2, res, 0, A2B2.len);

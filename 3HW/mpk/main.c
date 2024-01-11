@@ -25,9 +25,36 @@ void Pfree(struct Poly *pol) {
   }
 }
 
+void Pscanf(struct Poly *pol) {
+  for(unsigned i = 0; i < pol -> len; ++i) {
+    scanf("%d", pol -> p + i);
+  }
+}
 
+void Pprintf(const struct Poly pol) {
+  for(unsigned i = 0; i < pol.len; ++i) {
+    printf("%d ", pol.p[i]);
+  }
+  printf("\n");
+}
 
 int main(){
+  unsigned sizeA, sizeB;
+  struct Poly A, B;
+
+  if (2 != scanf("%d%d", &sizeA, &sizeB)) {
+    printf("scanf of sizeA and sizeB failed\n");
+    abort();
+  }
+  A = Palloc(sizeA);
+  B = Palloc(sizeB);
+
+  Pscanf(&A);
+  Pscanf(&B);
+
+
+  Pprintf(A);
+  Pprintf(B);
 
   return 0;
 }

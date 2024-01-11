@@ -38,9 +38,16 @@ void Pprintf(const struct Poly pol) {
   printf("\n");
 }
 
+struct Poly Pmul(const struct Poly A, const struct Poly B) {
+  struct Poly C;
+  C = Palloc(A.len + B.len - 1);
+
+  return C;
+}
+
 int main(){
   unsigned sizeA, sizeB;
-  struct Poly A, B;
+  struct Poly A, B, C;
 
   if (2 != scanf("%d%d", &sizeA, &sizeB)) {
     printf("scanf of sizeA and sizeB failed\n");
@@ -52,6 +59,7 @@ int main(){
   Pscanf(&A);
   Pscanf(&B);
 
+  C = Pmul(A, B);
 
   Pprintf(A);
   Pprintf(B);

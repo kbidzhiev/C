@@ -60,28 +60,58 @@ low_coeff(const struct Poly A) {
 
 struct Poly
 Poly_mult(struct Poly A, struct Poly B);
-void fill_coeff(const struct Poly A, const struct Poly B, struct Poly *res);
+void fill_coeff(const struct Poly A, const struct Poly B, struct Poly *res, struct Poly *tmp);
 
-void fillA1B1()
+struct Poly A1B1_in_res(const struct Poly *res, unsigned len){
+  struct Poly A1B1 = {len, res -> p};
+  return A1B1;
+}
+struct Poly A2B2_in_res(const struct Poly *res, unsigned len){
+  struct Poly A2B2 = {len, res -> p + (res -> len - len)};
+  return A2B2;
+}
 
-void fill_coeff(const struct Poly A, const struct Poly B, struct Poly *res) {
+void fillA1B1(const struct Poly A1, const struct Poly B1, struct Poly *A1B1);
+void fillA2B2(const struct Poly A2, const struct Poly B2, struct Poly *A2B2);
+
+void fill_coeff(const struct Poly A, const struct Poly B, struct Poly *res, struct Poly *tmp) {
   struct Poly A1, A2, B1, B2;
+  struct Poly A1B1, A2B2;
+  struct Poly addA1A2, addB1B2;
   A1 = high_coeff(A);
   B1 = high_coeff(B);
   A2 = low_coeff(A);
   B2 = low_coeff(B);
 
-  fillA1B1(A1, B1, res);
+  A1B1 = A1B1_in_res(res, A1.len + B1.len - 1);//A1B1 lives in res
+  A2B2 = A2B2_in_res(res, A2.len + B2.len - 1);//A2B2 lives in res
+  //fill_coeff(A1, B1, &A1B1); //A1B1 will be filled to res without malloc
+  //fill_coeff(A2, B2, &A2B2); //A2B2 will be filled to res without malloc
+  
+  addA1A2.len = A1.len;
+  addA1A2.p = tmp -> p;
+
+  addB1B2.len = B1.len;
+  addB1B2.p = tmp -> p + addA1A2.len;
+
 
 }
 struct Poly
 Poly_mult(const struct Poly A, const struct Poly B) {
   struct Poly res = {A.len + B.len - 1, NULL};
+  struct Poly tmp = {A.len + B.len - 1, NULL};
   res = allocate_Poly(res.len);
+  // tmp stores (A1+A2) * (B1+B2)
+  // How much additional memory it takes ?
+  // storing first term  A1+A2: len(A1+A2) == len(A1)
+  // storing second term B1+B2: len(B1+B2) == len(B1)
+  // storing product     (A1+A2) * (B1+B2) == len(A1) + len(B1) - 1
+  // Take into account that len(A1) == len(B1) == len(A2) == len(B2) because len(A) == pow(2,k)
+  // therefore all together :
+  // len(A1) + len(B1) + len(A1) + len(B1) - 1 == len(A) + len(B) - 1 == len(res)
+  tmp = allocate_Poly(tmp.len);
 
-  fill_coeff(A, B, &res);
-
-
+  fill_coeff(A, B, &res, &tmp);
 
   return res;
 }

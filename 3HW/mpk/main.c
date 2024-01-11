@@ -38,9 +38,31 @@ void Pprintf(const struct Poly pol) {
   printf("\n");
 }
 
+struct Poly termA2(const struct Poly A) {
+  struct Poly A2 = {A.len/2, A.p};
+  return A2;
+}
+
+struct Poly termA1(const struct Poly A) {
+  struct Poly A1 = {A.len/2, A.p + A.len/2};
+  return A1;
+}
+
 struct Poly Pmul(const struct Poly A, const struct Poly B) {
   struct Poly C;
-  C = Palloc(A.len + B.len - 1);
+  //struct Poly term1; //A1B1
+  //struct Poly term2; //Karatsuba term
+  //struct Poly term3; //A2B2
+  struct Poly A1, A2, B1, B2;
+  C = Palloc(A.len + B.len - 1); //len(A) == len(B) == pow(2,k)
+
+  A1 = termA1(A);
+  A2 = termA2(A);
+
+  B1 = termA1(B);
+  B2 = termA2(B);
+
+
 
   return C;
 }

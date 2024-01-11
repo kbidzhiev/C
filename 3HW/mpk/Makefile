@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O2 -Wall -Wextra -Werror=declaration-after-statement -Wunused-but-set-variable
+CFLAGS = -g -Wall -Wextra -Werror=declaration-after-statement -Wunused-but-set-variable
 TARGET = a.out
 SRCS = main.c tests.c
 OBJS = $(SRCS:.c=.o)

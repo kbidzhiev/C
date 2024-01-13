@@ -70,9 +70,34 @@ void test_termA1_termA2(int i) {
 
   printf("%d. Test termA1_termA2\n", i);
 }
+
+
+struct Poly termA1B1(const struct Poly *C);
+struct Poly termA2B2(const struct Poly *C);
+void test_termA1B1_termA2B2(int i) {
+  struct Poly A1B1, A2B2;
+  struct Poly a1b1, a2b2;
+  struct Poly C = {7, NULL};
+  int c[7] = {1, 2, 3, 4, 5, 6, 7};
+  int c1[3] = {1, 2, 3};
+  int c2[3] = {5, 6, 7};
+  C.p = c;
+  a1b1.p = c1;
+  a2b2.p = c2;
+  a1b1.len = a2b2.len = 3;
+  A1B1 = termA1B1(&C);
+  A2B2 = termA2B2(&C);
+
+  Passert(a1b1, A1B1);
+  Passert(a2b2, A2B2);
+
+  printf("%d. Test termA1B1_termA2B2\n", i);
+}
+
 void test_all(void) {
   test_Pmult2(1);
   test_termA1_termA2(2);
+  test_termA1B1_termA2B2(3);
 
   printf("All tests are ok\n");
 }

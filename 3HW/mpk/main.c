@@ -62,31 +62,31 @@ struct Poly termA2(const struct Poly *A) {
   return A2;
 }
 
-#if 0
-struct Poly termA2B2(const struct Poly *C) {
-  // Mathematical explanaition:
-  // lenA + len B - 1 == lenC  // assert(lenA == lenB)
-  // lenA1 + lenA2 == lenA //assert(lenA1 == lenA2 == lenB1 == lenB2)
-  // => lenA == (lenC + 1)/2
-  // => lenA2 == lenA/2
-  // => lenA2B2 == lenA2 + lenB2 - 1 == lenA - 1 == (lenC - 1)/2
-  unsigned lenA2B2 = (C -> len - 1)/2;
-  struct Poly A2B2 = {lenA2B2, C -> p};
-  return A2B2;
-}
-
 struct Poly termA1B1(const struct Poly *C) {
   // Mathematical explanaition:
   // lenA + len B - 1 == lenC  // assert(lenA == lenB)
   // lenA1 + lenA2 == lenA //assert(lenA1 == lenA2 == lenB1 == lenB2)
   // => lenA == (lenC + 1)/2
   // => lenA2 == lenA/2
-  // => lenA1B1 == lenA1 + lenB1 - 1 == lenA - 1 == (lenC - 1)/2
+  // => lenA2B2 == lenA2 + lenB2 - 1 == lenA - 1 == (lenC - 1)/2
   unsigned lenA1B1 = (C -> len - 1)/2;
-  struct Poly A1B1 = {lenA1B1, C -> p + ((C -> len) - lenA1B1)};
+  struct Poly A1B1 = {lenA1B1, C -> p};
   return A1B1;
 }
 
+struct Poly termA2B2(const struct Poly *C) {
+  // Mathematical explanaition:
+  // lenA + len B - 1 == lenC  // assert(lenA == lenB)
+  // lenA1 + lenA2 == lenA //assert(lenA1 == lenA2 == lenB1 == lenB2)
+  // => lenA == (lenC + 1)/2
+  // => lenA2 == lenA/2
+  // => lenA1B1 == lenA1 + lenB1 - 1 == lenA - 1 == (lenC - 1)/2
+  unsigned lenA2B2 = (C -> len - 1)/2;
+  struct Poly A2B2 = {lenA2B2, (C -> p) + ((C -> len) - lenA2B2)};
+  return A2B2;
+}
+
+#if 0
 struct Poly termA1A2(const struct Poly A1, const struct Poly A2, struct Poly *tmp) {
   unsigned i;
   struct Poly A1A2 = {A1.len, tmp -> p};

@@ -52,14 +52,14 @@ struct Poly Pmult2(const struct Poly lhs, const struct Poly rhs, struct Poly res
   return res;
 }
 
-struct Poly termA2(const struct Poly *A) {
-  struct Poly A2 = {A -> len/2, A ->p};
-  return A2;
+struct Poly termA1(const struct Poly *A) {
+  struct Poly A1 = {A -> len/2, A ->p};
+  return A1;
 }
 
-struct Poly termA1(const struct Poly *A) {
-  struct Poly A1 = {A -> len/2, (A -> p) + (A -> len/2)};
-  return A1;
+struct Poly termA2(const struct Poly *A) {
+  struct Poly A2 = {A -> len/2, (A -> p) + (A -> len/2)};
+  return A2;
 }
 
 #if 0

@@ -56,8 +56,8 @@ void test_termA1_termA2(int i) {
   struct Poly A1 = {4, NULL}, A2 = {4, NULL};
   struct Poly A = {8, NULL};
   int a[8] = {1, 2, 3, 4, 5, 6, 7, 8};
-  int a2[4] = {1, 2, 3, 4};
-  int a1[4] = {5, 6, 7, 8};
+  int a1[4] = {1, 2, 3, 4};
+  int a2[4] = {5, 6, 7, 8};
 
   A1.p = a1;
   A2.p = a2;

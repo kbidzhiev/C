@@ -1,12 +1,13 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "tests.h"
 
 struct Poly {
   unsigned len;
   int *p;
 };
 
-struct Poly Palloc(unsigned len) {
+struct Poly Pmalloc(unsigned len) {
   struct Poly pol = {len, NULL};
   pol.p = malloc(len * sizeof(int));
   if (NULL == pol.p) {
@@ -38,6 +39,19 @@ void Pprintf(const struct Poly pol) {
   printf("\n");
 }
 
+struct Poly Pmult2(const struct Poly lhs, const struct Poly rhs, struct Poly res) {
+  unsigned i, j, k;
+  assert(lhs.len + rhs.len -1 == res.len);
+  for(j = 0; j < rhs.len; ++j) {
+    k = j;
+    for(i = 0; i < lhs.len; ++i) {
+      res.p[k] += rhs.p[j] * lhs.p[i];
+      ++k;
+    }
+  }
+  return res;
+}
+
 struct Poly termA2(const struct Poly *A) {
   struct Poly A2 = {A -> len/2, A ->p};
   return A2;
@@ -48,6 +62,7 @@ struct Poly termA1(const struct Poly *A) {
   return A1;
 }
 
+#if 0
 struct Poly termA2B2(const struct Poly *C) {
   // Mathematical explanaition:
   // lenA + len B - 1 == lenC  // assert(lenA == lenB)
@@ -131,22 +146,25 @@ struct Poly Pmul(const struct Poly A, const struct Poly B) {
 
   return C;
 }
+#endif
 
-int main(){
+int main(void){
   unsigned sizeA, sizeB;
-  struct Poly A, B, C;
+  struct Poly A, B;
+  //struct Poly C;
+  test_all();
 
   if (2 != scanf("%d%d", &sizeA, &sizeB)) {
     printf("scanf of sizeA and sizeB failed\n");
     abort();
   }
-  A = Palloc(sizeA);
-  B = Palloc(sizeB);
+  A = Pmalloc(sizeA);
+  B = Pmalloc(sizeB);
 
   Pscanf(&A);
   Pscanf(&B);
 
-  C = Pmul(A, B);
+  //C = Pmul(A, B);
 
   Pprintf(A);
   Pprintf(B);

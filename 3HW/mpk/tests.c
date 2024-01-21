@@ -120,12 +120,55 @@ void test_termA1A2(int i) {
   printf("%d. Test termA1A2_add\n", i);
 }
 
-void test_Pmult(const struct Poly A, const struct Poly B);
+unsigned ln2(unsigned len);
+void test_ln2(unsigned i) {
+
+  assert(ln2(1) == 0);
+  assert(ln2(2) == 1);
+  assert(ln2(4) == 2);
+  assert(ln2(8) == 3);
+  assert(ln2(16) == 4);
+  assert(ln2(17) == 4);
+
+  printf("%d. Test ln2\n", i);
+}
+
+struct Poly Pmult(const struct Poly A, const struct Poly B);
+void Pprintf(const struct Poly pol);
+void test_Pmult(int i) {
+  int a[4] = {4, 3, 2, 1};
+  int b[4] = {8, 7, 6, 5};
+  struct Poly A, B, C, Ckar;
+  A.len = B.len = 4;
+  A.p = a;
+  B.p = b;
+  C = Pmalloc(4 + 4 - 1);
+
+  C = Pmult_classic(A, B, C);
+  Ckar = Pmult(A, B);
+  assert(32 == C.p[0] && 52 == C.p[1]);
+  assert(61 == C.p[2] && 60 == C.p[3]);
+  assert(34 == C.p[4] && 16 == C.p[5]);
+  assert(5 == C.p[6]);
+
+  Pprintf(C);
+  Pprintf(Ckar);
+  assert(32 == Ckar.p[0] && 52 == Ckar.p[1]);
+  assert(61 == Ckar.p[2] && 60 == Ckar.p[3]);
+  assert(34 == Ckar.p[4] && 16 == Ckar.p[5]);
+  assert(5 == Ckar.p[6]);
+
+  Pfree(&C);
+  Pfree(&Ckar);
+  printf("%i. Test Pmult_karats\n", i);
+}
 
 void test_all(void) {
   test_Pmult2(1);
   test_termA1_termA2(2);
   test_termA1B1_termA2B2(3);
   test_termA1A2(4);
+  test_ln2(5);
+  test_Pmult(6);
   printf("All tests are ok\n");
 }

@@ -7,103 +7,23 @@ struct Poly {
   int *p;
 };
 
-struct Poly Pmalloc(unsigned len) {
-  struct Poly pol = {len, NULL};
-  pol.p = malloc(len * sizeof(int));
-  if (NULL == pol.p) {
-    printf("Palloc malloc of %u failed\n", len);
-    abort();
-  }
-  return pol;
-}
-void Pfree(struct Poly *pol) {
-  free(pol -> p);
-  pol -> len = 0;
-  pol -> p = NULL; // How to check did free worked correctly
-  if ((pol -> p != NULL) || (pol -> len != 0)) {
-    printf("Pfree failed\n");
-    abort();
-  }
-}
 
-void Pscanf(struct Poly *pol) {
-  for(unsigned i = 0; i < pol -> len; ++i) {
-    scanf("%d", pol -> p + i);
-  }
-}
+struct Poly Pmalloc(unsigned len);
+void Pfree(struct Poly *pol);
 
-void Pprintf(const struct Poly pol) {
-  for(unsigned i = 0; i < pol.len; ++i) {
-    printf("%d ", pol.p[i]);
-  }
-  printf("\n");
-}
+void Pscanf(struct Poly *pol);
+void Pprintf(const struct Poly pol);
+struct Poly Pmult_classic(const struct Poly lhs, const struct Poly rhs, struct Poly res);
 
-struct Poly Pmult2(const struct Poly lhs, const struct Poly rhs, struct Poly res) {
-  unsigned i, j, k;
-  assert(lhs.len + rhs.len -1 == res.len);
-  for(j = 0; j < rhs.len; ++j) {
-    k = j;
-    for(i = 0; i < lhs.len; ++i) {
-      res.p[k] += rhs.p[j] * lhs.p[i];
-      ++k;
-    }
-  }
-  return res;
-}
+struct Poly termA1(const struct Poly *A);
+struct Poly termA2(const struct Poly *A);
+struct Poly termA1B1_prod(const struct Poly *C);
+struct Poly termA2B2_prod(const struct Poly *C);
+struct Poly termA1A2_sum(const struct Poly A1, const struct Poly A2, struct Poly *tmp);
+struct Poly termB1B2_sum(const struct Poly B1, const struct Poly B2, struct Poly *tmp);
 
-struct Poly termA1(const struct Poly *A) {
-  struct Poly A1 = {A -> len/2, A ->p};
-  return A1;
-}
-
-struct Poly termA2(const struct Poly *A) {
-  struct Poly A2 = {A -> len/2, (A -> p) + (A -> len/2)};
-  return A2;
-}
-
-struct Poly termA1B1(const struct Poly *C) {
-  // Mathematical explanaition:
-  // lenA + len B - 1 == lenC  // assert(lenA == lenB)
-  // lenA1 + lenA2 == lenA //assert(lenA1 == lenA2 == lenB1 == lenB2)
-  // => lenA == (lenC + 1)/2
-  // => lenA2 == lenA/2
-  // => lenA2B2 == lenA2 + lenB2 - 1 == lenA - 1 == (lenC - 1)/2
-  unsigned lenA1B1 = (C -> len - 1)/2;
-  struct Poly A1B1 = {lenA1B1, C -> p};
-  return A1B1;
-}
-
-struct Poly termA2B2(const struct Poly *C) {
-  // Mathematical explanaition:
-  // lenA + len B - 1 == lenC  // assert(lenA == lenB)
-  // lenA1 + lenA2 == lenA //assert(lenA1 == lenA2 == lenB1 == lenB2)
-  // => lenA == (lenC + 1)/2
-  // => lenA2 == lenA/2
-  // => lenA1B1 == lenA1 + lenB1 - 1 == lenA - 1 == (lenC - 1)/2
-  unsigned lenA2B2 = (C -> len - 1)/2;
-  struct Poly A2B2 = {lenA2B2, (C -> p) + ((C -> len) - lenA2B2)};
-  return A2B2;
-}
 
 #if 0
-struct Poly termA1A2(const struct Poly A1, const struct Poly A2, struct Poly *tmp) {
-  unsigned i;
-  struct Poly A1A2 = {A1.len, tmp -> p};
-  for(i = 0; i < A1A2.len; ++i) {
-    A1A2.p[i] = A1.p[i] + A2.p[i];
-  }
-  return A1A2;
-}
-
-struct Poly termB1B2(const struct Poly B1, const struct Poly B2, struct Poly *tmp) {
-  unsigned i;
-  struct Poly B1B2 = {B1.len, (tmp -> p) + B1.len};
-  for(i = 0; i < B1B2.len; ++i) {
-    B1B2.p[i] = B1.p[i] + B2.p[i];
-  }
-  return B1B2;
-}
 void Pmul_impl(const struct Poly *A,
                       const struct Poly *B,
                       struct Poly *C,
@@ -170,4 +90,107 @@ int main(void){
   Pprintf(B);
 
   return 0;
+}
+
+
+struct Poly Pmalloc(unsigned len) {
+  struct Poly pol = {len, NULL};
+  pol.p = malloc(len * sizeof(int));
+  if (NULL == pol.p) {
+    printf("Palloc malloc of %u failed\n", len);
+    abort();
+  }
+  return pol;
+}
+
+void Pfree(struct Poly *pol) {
+  free(pol -> p);
+  pol -> len = 0;
+  pol -> p = NULL;
+  /* #I think "if" doesn't make sense here
+  if ((pol -> p != NULL) || (pol -> len != 0)) {
+    printf("Pfree failed\n");
+    abort();
+  }
+  */
+}
+
+void Pscanf(struct Poly *pol) {
+  for(unsigned i = 0; i < pol -> len; ++i) {
+    scanf("%d", pol -> p + i);
+  }
+}
+
+void Pprintf(const struct Poly pol) {
+  for(unsigned i = 0; i < pol.len; ++i) {
+    printf("%d ", pol.p[i]);
+  }
+  printf("\n");
+}
+
+struct Poly Pmult_classic(const struct Poly lhs, const struct Poly rhs, struct Poly res) {
+  unsigned i, j, k;
+  assert(lhs.len + rhs.len -1 == res.len);
+  for(j = 0; j < rhs.len; ++j) {
+    k = j;
+    for(i = 0; i < lhs.len; ++i) {
+      res.p[k] += rhs.p[j] * lhs.p[i];
+      ++k;
+    }
+  }
+  return res;
+}
+
+struct Poly termA1(const struct Poly *A) {
+  struct Poly A1 = {A -> len/2, A ->p};
+  return A1;
+}
+
+struct Poly termA2(const struct Poly *A) {
+  struct Poly A2 = {A -> len/2, (A -> p) + (A -> len/2)};
+  return A2;
+}
+
+struct Poly termA1B1_prod(const struct Poly *C) {
+  /* Mathematical explanaition:
+   * lenA + len B - 1 == lenC  // assert(lenA == lenB)
+   * lenA1 + lenA2 == lenA //assert(lenA1 == lenA2 == lenB1 == lenB2)
+   * => lenA == (lenC + 1)/2
+   * => lenA2 == lenA/2
+   * => lenA2B2 == lenA2 + lenB2 - 1 == lenA - 1 == (lenC - 1)/2
+   */
+  unsigned lenA1B1 = (C -> len - 1)/2;
+  struct Poly A1B1 = {lenA1B1, C -> p};
+  return A1B1;
+}
+
+struct Poly termA2B2_prod(const struct Poly *C) {
+  /* Mathematical explanaition:
+  * lenA + len B - 1 == lenC  // assert(lenA == lenB)
+  * lenA1 + lenA2 == lenA //assert(lenA1 == lenA2 == lenB1 == lenB2)
+  * => lenA == (lenC + 1)/2
+  * => lenA2 == lenA/2
+  * => lenA1B1 == lenA1 + lenB1 - 1 == lenA - 1 == (lenC - 1)/2
+  */
+  unsigned lenA2B2 = (C -> len - 1)/2;
+  struct Poly A2B2 = {lenA2B2, (C -> p) + ((C -> len) - lenA2B2)};
+  return A2B2;
+}
+
+struct Poly termA1A2_sum(const struct Poly A1, const struct Poly A2, struct Poly *tmp) {
+  unsigned i;
+  struct Poly A1A2 = {A1.len, tmp -> p};
+  for(i = 0; i < A1A2.len; ++i) {
+    A1A2.p[i] = A1.p[i] + A2.p[i];
+  }
+  return A1A2;
+}
+
+struct Poly termB1B2_sum(const struct Poly B1, const struct Poly B2, struct Poly *tmp) {
+  unsigned i;
+  struct Poly B1B2 = {B1.len, (tmp -> p) + B1.len};
+  for(i = 0; i < B1B2.len; ++i) {
+    B1B2.p[i] = B1.p[i] + B2.p[i];
+  }
+  return B1B2;
 }

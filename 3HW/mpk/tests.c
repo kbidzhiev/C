@@ -94,6 +94,16 @@ void test_termA1B1_termA2B2(int i) {
   printf("%d. Test termA1B1_termA2B2\n", i);
 }
 
+
+struct Poly termA1A2(const struct Poly A1, const struct Poly A2, struct Poly *tmp);
+struct Poly termB1B2(const struct Poly B1, const struct Poly B2, struct Poly *tmp);
+void test_termA1A2_B1B2(int i) {
+  struct Poly A, B;
+  struct Poly A1, A2, B1, B2;
+
+  printf("%d. Test termA1A2_termB1B2\n", i);
+}
+
 void test_all(void) {
   test_Pmult2(1);
   test_termA1_termA2(2);

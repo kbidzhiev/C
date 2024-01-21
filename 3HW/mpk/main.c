@@ -7,62 +7,80 @@ struct Poly {
   int *p;
 };
 
-
 struct Poly Pmalloc(unsigned len);
 void Pfree(struct Poly *pol);
 
 void Pscanf(struct Poly *pol);
 void Pprintf(const struct Poly pol);
+
 struct Poly Pmult_classic(const struct Poly lhs, const struct Poly rhs, struct Poly res);
 
 struct Poly termA1(const struct Poly *A);
 struct Poly termA2(const struct Poly *A);
+
 struct Poly termA1B1_prod(const struct Poly *C);
 struct Poly termA2B2_prod(const struct Poly *C);
+
 struct Poly termA1A2_sum(const struct Poly A1, const struct Poly A2, struct Poly *tmp);
 struct Poly termB1B2_sum(const struct Poly B1, const struct Poly B2, struct Poly *tmp);
 
 
-#if 0
+#if 1
 void Pmul_impl(const struct Poly *A,
-                      const struct Poly *B,
-                      struct Poly *C,
-                      struct Poly *tmp) {
-  struct Poly A1B1; //A1B1 stored in the begining of C
-  struct Poly term2; //Karatsuba term stored in the middle of C
-  struct Poly A2B2; //A2B2 stored in the end of C
+              const struct Poly *B,
+                    struct Poly *C,
+                    struct Poly *tmp) {
+/* 
+ *
+ *
+ */
+  unsigned i;
+  struct Poly A1B1_prod; //A1B1 stored in the begining of C
+  struct Poly term2_karatsuba; //Karatsuba term stored in the middle of C
+  struct Poly A2B2_prod; //A2B2 stored in the end of C
   struct Poly A1, A2, B1, B2;
-  struct Poly A1A2, B1B2;
-  struct Poly tmp2; //point to the third part of tmp
+  struct Poly A1A2_sum, B1B2_sum;
+  struct Poly tmp2; //contains a pointer to the third part of tmp
 
-  A1 = termA1(A); //write test
-  A2 = termA2(A); //write test
+  assert(A -> len == B -> len);
+  if (2 == (A -> len)) {
+    Pmult_classic(*A, *B, *C);
+  }
+
+  A1 = termA1(A);
+  A2 = termA2(A);
   B1 = termA1(B);
   B2 = termA2(B);
 
-  A1B1 = termA1B1(C); //A1B1 is empty //write test
-  A2B2 = termA2B2(C); //A2B2 is empty //write test
-  A1A2 = termA1A2(A1, A2, tmp); //A1 + A2 is written in tmp;
-  B1B2 = termB1B2(B1, B2, tmp); //B1 + B2 is written in tmp;
-  tmp2.len = A1A2.len + B1B2.len - 1;
-  tmp2.p = tmp -> p + ((tmp -> len) - tmp2.len);
+  A1B1_prod = termA1B1_prod(C); //A1B1 is empty //write test
+  A2B2_prod = termA2B2_prod(C); //A2B2 is empty //write test
+  A1A2_sum = termA1A2_sum(A1, A2, tmp); //A1 + A2 is written in tmp;
+  B1B2_sum = termB1B2_sum(B1, B2, tmp); //B1 + B2 is written in tmp;
 
-  Pmul_impl(&A1, &B1, &A1B1, &tmp2); //filling A1B1
-  Pmul_impl(&A2, &B2, &A2B2, &tmp2); //filling A2B2
-  
-  Pmul_impl(A1A2, B1B2, tmp2, tmp); //filling Karatsuba term into tmp
+  tmp2.len = (tmp -> len) - A1A2_sum.len - B1B2_sum.len;
+  tmp2.p = tmp -> p + (A1A2_sum.len + B1B2_sum.len);
 
+  Pmul_impl(&A1, &B1, &A1B1_prod, &tmp2); //filling A1B1
+  Pmul_impl(&A2, &B2, &A2B2_prod, &tmp2); //filling A2B2
+
+  Pmul_impl(&A1A2_sum, &B1B2_sum, &term2_karatsuba, &tmp2); //filling Karatsuba term into tmp
+
+  for(i = 0; i < A -> len; ++i) {
+    (C -> p)[i + (A -> len)/2] += (term2_karatsuba.p)[i];
+  }
 
   return ;
 }
 
-struct Poly Pmul(const struct Poly A, const struct Poly B) {
+struct Poly Pmult(const struct Poly A, const struct Poly B) {
+  unsigned lentmp = 0;
   struct Poly C, tmp;
-  C = Palloc(A.len + B.len - 1); //len(A) == len(B) == pow(2,k)
-  tmp = Palloc(A.len + B.len - 1); //len(A) == len(B) == pow(2,k)
-
+  C = Pmalloc(A.len + B.len - 1); //len(A) == len(B) == pow(2,k)
+  tmp = Pmalloc(A.len + B.len - 1);
 
   Pmul_impl(&A, &B, &C, &tmp);
+
+  Pfree(&tmp);
 
   return C;
 }

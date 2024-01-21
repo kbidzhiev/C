@@ -1,5 +1,3 @@
-
-
 #include "tests.h"
 #include <stdio.h>
 
@@ -8,9 +6,11 @@ struct Poly {
   unsigned len;
   int *p;
 };
+
 struct Poly Pmalloc(unsigned len);
 void Pfree(struct Poly *p);
-struct Poly Pmult2(const struct Poly lhs, const struct Poly rhs, struct Poly res);
+
+struct Poly Pmult_classic(const struct Poly lhs, const struct Poly rhs, struct Poly res);
 
 void Passert(const struct Poly lhs, const struct Poly rhs) {
   unsigned i;
@@ -39,7 +39,7 @@ void test_Pmult2(int i) {
   B.p = b;
   C = Pmalloc(4 + 4 - 1);
 
-  C = Pmult2(A, B, C);
+  C = Pmult_classic(A, B, C);
   assert(32 == C.p[0] && 52 == C.p[1]);
   assert(61 == C.p[2] && 60 == C.p[3]);
   assert(34 == C.p[4] && 16 == C.p[5]);
@@ -72,8 +72,8 @@ void test_termA1_termA2(int i) {
 }
 
 
-struct Poly termA1B1(const struct Poly *C);
-struct Poly termA2B2(const struct Poly *C);
+struct Poly termA1B1_prod(const struct Poly *C);
+struct Poly termA2B2_prod(const struct Poly *C);
 void test_termA1B1_termA2B2(int i) {
   struct Poly A1B1, A2B2;
   struct Poly a1b1, a2b2;
@@ -85,8 +85,8 @@ void test_termA1B1_termA2B2(int i) {
   a1b1.p = c1;
   a2b2.p = c2;
   a1b1.len = a2b2.len = 3;
-  A1B1 = termA1B1(&C);
-  A2B2 = termA2B2(&C);
+  A1B1 = termA1B1_prod(&C);
+  A2B2 = termA2B2_prod(&C);
 
   Passert(a1b1, A1B1);
   Passert(a2b2, A2B2);
@@ -95,19 +95,37 @@ void test_termA1B1_termA2B2(int i) {
 }
 
 
-struct Poly termA1A2(const struct Poly A1, const struct Poly A2, struct Poly *tmp);
-struct Poly termB1B2(const struct Poly B1, const struct Poly B2, struct Poly *tmp);
-void test_termA1A2_B1B2(int i) {
-  struct Poly A, B;
-  struct Poly A1, A2, B1, B2;
+struct Poly termA1A2_sum(const struct Poly A1, const struct Poly A2, struct Poly *tmp);
+struct Poly termB1B2_sum(const struct Poly B1, const struct Poly B2, struct Poly *tmp);
 
-  printf("%d. Test termA1A2_termB1B2\n", i);
+void test_termA1A2(int i) {
+  struct Poly A, tmp, A1, A2;
+  struct Poly A1A2_sum, res;
+  int a[] = {1, 2, 3, 4, 5, 6, 7, 8};
+  int r1[] = {6, 8, 10, 12};
+  unsigned len = 8;
+  tmp = Pmalloc(len/2);
+
+  res.len = len/2;
+  res.p = r1;
+
+  A.len = len;
+  A.p = a;
+  A1 = termA1(&A);
+  A2 = termA2(&A);
+  A1A2_sum = termA1A2_sum(A1, A2, &tmp);
+  Passert(A1A2_sum, res);
+
+  Pfree(&tmp);
+  printf("%d. Test termA1A2_add\n", i);
 }
+
+void test_Pmult(const struct Poly A, const struct Poly B);
 
 void test_all(void) {
   test_Pmult2(1);
   test_termA1_termA2(2);
   test_termA1B1_termA2B2(3);
-
+  test_termA1A2(4);
   printf("All tests are ok\n");
 }

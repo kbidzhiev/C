@@ -7,10 +7,10 @@ struct Poly {
   int *p;
 };
 
-struct Poly Pmalloc(unsigned len);
+struct Poly Pcalloc(unsigned len);
 void Pfree(struct Poly *p);
 
-struct Poly Pmult_classic(const struct Poly lhs, const struct Poly rhs, struct Poly res);
+struct Poly *Pmult_classic(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res);
 
 void Passert(const struct Poly lhs, const struct Poly rhs) {
   unsigned i;
@@ -30,16 +30,16 @@ void Passert(const struct Poly lhs, const struct Poly rhs) {
 
 }
 
-void test_Pmult2(int i) {
+void test_Pmult_classic(int i) {
   int a[4] = {4, 3, 2, 1};
   int b[4] = {8, 7, 6, 5};
   struct Poly A, B, C;
   A.len = B.len = 4;
   A.p = a;
   B.p = b;
-  C = Pmalloc(4 + 4 - 1);
+  C = Pcalloc(4 + 4 - 1);
 
-  C = Pmult_classic(A, B, C);
+  Pmult_classic(&A, &B, &C);
   assert(32 == C.p[0] && 52 == C.p[1]);
   assert(61 == C.p[2] && 60 == C.p[3]);
   assert(34 == C.p[4] && 16 == C.p[5]);
@@ -62,7 +62,8 @@ void test_ln2(unsigned i) {
   printf("%d. Test ln2\n", i);
 }
 
-struct Poly Pmult(const struct Poly A, const struct Poly B);
+
+struct Poly Pmult(const struct Poly *A, const struct Poly *B);
 void Pprintf(const struct Poly pol);
 void test_Pmult(int i) {
   int a[4] = {4, 3, 2, 1};
@@ -71,10 +72,10 @@ void test_Pmult(int i) {
   A.len = B.len = 4;
   A.p = a;
   B.p = b;
-  C = Pmalloc(4 + 4 - 1);
+  C = Pcalloc(4 + 4 - 1);
 
-  C = Pmult_classic(A, B, C);
-  Ckar = Pmult(A, B);
+  Pmult_classic(&A, &B, &C);
+  Ckar = Pmult(&A, &B);
   assert(32 == C.p[0] && 52 == C.p[1]);
   assert(61 == C.p[2] && 60 == C.p[3]);
   assert(34 == C.p[4] && 16 == C.p[5]);
@@ -92,9 +93,10 @@ void test_Pmult(int i) {
   printf("%i. Test Pmult_karats\n", i);
 }
 
+
 void test_all(void) {
-  test_Pmult2(1);
-  test_ln2(5);
-  //test_Pmult(6);
+  test_Pmult_classic(1);
+  test_ln2(2);
+  test_Pmult(3);
   printf("All tests are ok\n");
 }

@@ -31,24 +31,30 @@ struct Poly *karatsuba_terms(struct Poly *A, const struct Poly *B, const struct 
   return A;
 }
 
-struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
-  struct Poly A1B1_mult, A2B2_mult;
+struct Poly A1B1_in_res(const struct Poly *res);
+struct Poly A2B2_in_res(const struct Poly *res);
+
+struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs);
+struct Poly *Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res) {
   struct Poly A1A2_sum, B1B2_sum;
   struct Poly karat;
 
+  struct Poly A1B1_mult = A1B1_in_res(res);
+  struct Poly A2B2_mult = A2B2_in_res(res);
   struct Poly A1 = termA1(lhs);
   struct Poly A2 = termA2(lhs);
   struct Poly B1 = termA1(rhs);
   struct Poly B2 = termA2(rhs);
-  struct Poly res = Pcalloc((lhs -> len) + (rhs -> len) - 1);
 
   if (lhs -> len == 2) {
-    Pmult_classic(lhs, rhs, &res);
+    Pmult_classic(lhs, rhs, res);
     return res;
   }
 
-  A1B1_mult = Pmult(&A1, &B1);
-  A2B2_mult = Pmult(&A2, &B2);
+  Pmult_impl(&A1, &B1, &A1B1_mult);
+  Pmult_impl(&A2, &B2, &A2B2_mult);
+  //A1B1_mult = Pmult(&A1, &B1);
+  //A2B2_mult = Pmult(&A2, &B2);
 
   A1A2_sum = Psum(&A1, &A2);
   B1B2_sum = Psum(&B1, &B2);
@@ -58,12 +64,22 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
   Pfree(&A1A2_sum);
   Pfree(&B1B2_sum);
 
-  merge_terms(&A1B1_mult, &karat, &A2B2_mult, &res);
+  merge_terms(&A1B1_mult, &karat, &A2B2_mult, res);
 
-  Pfree(&A1B1_mult);
-  Pfree(&A2B2_mult);
+  //Pfree(&A1B1_mult);
+  //Pfree(&A2B2_mult);
   Pfree(&karat);
 
+  return res;
+}
+struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
+  struct Poly res = Pcalloc((lhs -> len) + (rhs -> len) - 1);
+  if (lhs -> len == 2) {
+    Pmult_classic(lhs, rhs, &res);
+    return res;
+  }
+
+  Pmult_impl(lhs, rhs, &res);
   return res;
 }
 
@@ -182,3 +198,23 @@ struct Poly *merge_terms(const struct Poly *A, const struct Poly *B, const struc
     res -> p[i + beginB] += B -> p[i];
   return res;
 }
+
+struct Poly A1B1_in_res(const struct Poly *res) {
+  /* A1 and B1 are half size of A
+   * len(A1*B1) = 2*len(A1) - 1 == len(A) - 1
+   * len(res) = 2*len(A) - 1 = 2*lenA - 2 + 1 = 2(lenA - 1) + 1 = 2len(A1*B1) + 1;
+   * => len(A1*B1) == (len(res) - 1)/2   */
+  unsigned len = ((res -> len) - 1)/2;
+  struct Poly A1B1 = {len, res -> p};
+  return A1B1;
+}
+struct Poly A2B2_in_res(const struct Poly *res) {
+  /* A1 and B1 are half size of A
+   * len(A1*B1) = 2*len(A1) - 1 == len(A) - 1
+   * len(res) = 2*len(A) - 1 = 2*lenA - 2 + 1 = 2(lenA - 1) + 1 = 2len(A1*B1) + 1;
+   * => len(A1*B1) == (len(res) - 1)/2   */
+  unsigned len = ((res -> len) - 1)/2;
+  struct Poly A2B2 = {len, (res -> p) + len + 1};
+  return A2B2;
+}
+

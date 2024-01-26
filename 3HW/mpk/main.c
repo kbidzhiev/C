@@ -26,12 +26,11 @@ struct Poly *karatsuba_terms(struct Poly *A, const struct Poly *B, const struct 
   unsigned i;
   assert((A -> len) == (B -> len));
   assert((B -> len) == (C -> len));
-
   for(i = 0; i < (A -> len); ++i)
-    A -> p[i] = (A -> p[i]) - (B -> p[i]) - (C -> p[i]);
-
+    A -> p[i] -= (B -> p[i]) + (C -> p[i]);
   return A;
 }
+
 struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
   struct Poly A1B1_mult, A2B2_mult;
   struct Poly A1A2_sum, B1B2_sum;
@@ -47,7 +46,6 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
     Pmult_classic(lhs, rhs, &res);
     return res;
   }
-
 
   A1B1_mult = Pmult(&A1, &B1);
   A2B2_mult = Pmult(&A2, &B2);

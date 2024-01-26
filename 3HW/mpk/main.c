@@ -27,9 +27,8 @@ struct Poly *karatsuba_terms(struct Poly *A, const struct Poly *B, const struct 
   assert((A -> len) == (B -> len));
   assert((B -> len) == (C -> len));
 
-  for(i = 0; i < (A -> len); ++i) {
+  for(i = 0; i < (A -> len); ++i)
     A -> p[i] = (A -> p[i]) - (B -> p[i]) - (C -> p[i]);
-  }
 
   return A;
 }
@@ -117,15 +116,13 @@ void Pfree(struct Poly *pol) {
 }
 
 void Pscanf(struct Poly *pol) {
-  for(unsigned i = 0; i < pol -> len; ++i) {
+  for(unsigned i = 0; i < pol -> len; ++i)
     scanf("%d", pol -> p + i);
-  }
 }
 
 void Pprintf(const struct Poly pol) {
-  for(unsigned i = 0; i < pol.len; ++i) {
-    printf("%d ", pol.p[i]);
-  }
+  for(unsigned i = 0; i < pol.len; ++i)
+    printf("%2d ", pol.p[i]);
   printf("\n");
 }
 
@@ -146,11 +143,9 @@ struct Poly *Pmult_classic(const struct Poly *lhs, const struct Poly *rhs, struc
 
 unsigned ln2(unsigned len) {
   unsigned res = 0;
-  for(unsigned i = 0; i < 32; ++i) {
-    if((len >> i) && 1u) {
+  for(unsigned i = 0; i < 32; ++i)
+    if((len >> i) && 1u)
       res = i;
-    }
-  }
   return res;
 }
 
@@ -168,9 +163,8 @@ struct Poly Psum(const struct Poly *lhs, const struct Poly *rhs) {
   unsigned i;
   struct Poly sum = Pcalloc(lhs -> len);
   assert(lhs -> len == rhs -> len);
-  for(i = 0; i < (lhs -> len); ++i) {
+  for(i = 0; i < (lhs -> len); ++i)
     sum.p[i] = (lhs -> p[i]) + (rhs ->p[i]);
-  }
   return sum;
 }
 
@@ -186,8 +180,7 @@ struct Poly *merge_terms(const struct Poly *A, const struct Poly *B, const struc
     res -> p[i] = A -> p[i];
     res -> p[i + beginC] = C -> p[i];
   }
-  for(i = 0; i < B -> len; ++i) {
+  for(i = 0; i < B -> len; ++i)
     res -> p[i + beginB] += B -> p[i];
-  }
   return res;
 }

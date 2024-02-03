@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "timer.h"
 
 struct Poly {
   unsigned len;
@@ -71,6 +72,9 @@ struct Poly randPoly(unsigned  i) {
 struct Poly Pmult(const struct Poly *A, const struct Poly *B);
 void Pprintf(const struct Poly pol);
 void test_Pmult(int i, int l) {
+  struct timespec begin, end;
+
+
   struct Poly A, B, C, Ckar;
   srand(time(NULL));
   A = randPoly(l);
@@ -78,7 +82,11 @@ void test_Pmult(int i, int l) {
 
   C = Pcalloc(A.len + B.len - 1);
   Pmult_classic(&A, &B, &C);
+  // MEASURE TIME 
+  timespec_get(&begin, TIME_UTC);
   Ckar = Pmult(&A, &B);
+  timespec_get(&end, TIME_UTC);
+  
 
   Pprintf(A);
   Pprintf(B);
@@ -89,9 +97,31 @@ void test_Pmult(int i, int l) {
   Pfree(&B);
   Pfree(&C);
   Pfree(&Ckar);
-  printf("%i. Test Pmult_karats\n", i);
+  printf("%i. Test Pmult_karats; time = %f \n", i, diff(begin, end));
 }
 
+void test_mult_time(int i, int l) {
+
+  struct timespec begin, end;
+
+
+  struct Poly A, B, Ckar;
+  srand(time(NULL));
+  A = randPoly(l);
+  B = randPoly(l);
+
+  // MEASURE TIME 
+  timespec_get(&begin, TIME_UTC);
+  Ckar = Pmult(&A, &B);
+  timespec_get(&end, TIME_UTC);
+
+
+  Pfree(&A);
+  Pfree(&B);
+  Pfree(&Ckar);
+  printf("%i. Test mult_time; time = %f \n", i, diff(begin, end));
+
+}
 
 void test_all(void) {
   test_Pmult_classic(1);
@@ -100,5 +130,6 @@ void test_all(void) {
   test_Pmult(4, 8);
   test_Pmult(5, 16);
   test_Pmult(6, 32);
+  test_mult_time(7, 4096);
   printf("All tests are ok\n");
 }

@@ -85,14 +85,12 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
   return res;
 }
 
-
-int main(void){
+void mpk(void) {
   unsigned sizeA, sizeB;
   struct Poly A, B;
   struct Poly C;
-  test_all();
 
-  if (2 != scanf("%d%d", &sizeA, &sizeB)) {
+  if (2 != scanf("%u%u", &sizeA, &sizeB)) {
     printf("scanf of sizeA and sizeB failed\n");
     abort();
   }
@@ -111,6 +109,11 @@ int main(void){
   Pfree(&A);
   Pfree(&B);
 
+}
+
+int main(void){
+  test_all();
+  //mpk();
   return 0;
 }
 

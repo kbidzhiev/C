@@ -71,8 +71,9 @@ struct Poly randPoly(unsigned  i) {
 }
 struct Poly Pmult(const struct Poly *A, const struct Poly *B);
 void Pprintf(const struct Poly pol);
-void test_Pmult(int i, int l) {
+void test_Pmult(int i, unsigned l) {
   struct timespec begin, end;
+  double time_classic, time_karats;
 
 
   struct Poly A, B, C, Ckar;
@@ -81,12 +82,17 @@ void test_Pmult(int i, int l) {
   B = randPoly(l);
 
   C = Pcalloc(A.len + B.len - 1);
+  // Classic Pmult
+  timespec_get(&begin, TIME_UTC);
   Pmult_classic(&A, &B, &C);
-  // MEASURE TIME 
+  timespec_get(&end, TIME_UTC);
+  time_classic = diff(begin, end); 
+  
+  // Karatsuba Pmult
   timespec_get(&begin, TIME_UTC);
   Ckar = Pmult(&A, &B);
   timespec_get(&end, TIME_UTC);
-  
+  time_karats = diff(begin, end); 
 
   Pprintf(A);
   Pprintf(B);
@@ -97,7 +103,9 @@ void test_Pmult(int i, int l) {
   Pfree(&B);
   Pfree(&C);
   Pfree(&Ckar);
-  printf("%i. Test Pmult_karats; time = %f \n", i, diff(begin, end));
+  printf("%i. Test Pmult_karats(%u);\n", i, l);
+  printf("\tclassic = %f;\n", time_classic);
+  printf("\tkaratsu = %f;\n", time_karats);
 }
 
 void test_mult_time(int i, int l) {
@@ -119,7 +127,7 @@ void test_mult_time(int i, int l) {
   Pfree(&A);
   Pfree(&B);
   Pfree(&Ckar);
-  printf("%i. Test mult_time; time = %f \n", i, diff(begin, end));
+  printf("%i. Test mult_time(%d); time = %f \n", i, l, diff(begin, end));
 
 }
 
@@ -129,7 +137,7 @@ void test_all(void) {
   test_Pmult(3, 4);
   test_Pmult(4, 8);
   test_Pmult(5, 16);
-  test_Pmult(6, 32);
-  test_mult_time(7, 4096);
+  test_Pmult(6, 128);
+  test_mult_time(7, (1u << 15));
   printf("All tests are ok\n");
 }

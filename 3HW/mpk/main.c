@@ -80,7 +80,6 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
     Pmult_classic(lhs, rhs, &res);
     return res;
   }
-
   Pmult_impl(lhs, rhs, &res);
   return res;
 }

@@ -74,6 +74,7 @@ struct Poly *Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct P
 
   return res;
 }
+
 struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
   struct Poly res = Pcalloc((lhs -> len) + (rhs -> len) - 1);
   if (lhs -> len == 2) {

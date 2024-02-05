@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror=declaration-after-statement -Wunused-but-set-variable
 CFLAGS += -pedantic
-CFLAGS += -g
-#CFLAGS += -O2
+#CFLAGS += -g
+CFLAGS += -O2
 TARGET = a.out
 SRCS = main.c tests.c
 OBJS = $(SRCS:.c=.o)
@@ -16,4 +16,4 @@ $(TARGET): $(OBJS)
 .PHONY: clean
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm  $(OBJS) $(TARGET)

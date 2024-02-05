@@ -14,6 +14,15 @@ void Pscanf(struct Poly *pol);
 void Pprintf(const struct Poly pol);
 
 struct Poly *Pmult_classic(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res);
+struct Poly *Pmult_classic2deg(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res){
+  assert(3 == res -> len);
+  assert(2 == lhs -> len);
+  assert(lhs -> len == rhs -> len);
+  res ->p[0] = (lhs ->p[0])*(rhs ->p[0]);
+  res ->p[1] = (lhs ->p[0])*(rhs ->p[1]) + (lhs ->p[1])*(rhs ->p[0]); 
+  res ->p[2] = (lhs ->p[1])*(rhs ->p[1]);
+  return res;
+}
 
 struct Poly termA1(const struct Poly *A);
 struct Poly termA2(const struct Poly *A);
@@ -60,7 +69,8 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
     return res;
   }
 
-
+  //A1B1_mult = A1B1_in_res(const struct Poly *res);
+  //A2B2_mult = A2B2_in_res(const struct Poly *res);
   A1B1_mult = Pmult(&A1, &B1);
   A2B2_mult = Pmult(&A2, &B2);
 
@@ -74,8 +84,8 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
 
   merge_terms(&A1B1_mult, &karat, &A2B2_mult, &res);
 
-  Pfree(&A1B1_mult);
-  Pfree(&A2B2_mult);
+  //Pfree(&A1B1_mult);
+  //Pfree(&A2B2_mult);
   Pfree(&karat);
 
   return res;
@@ -96,7 +106,7 @@ void mpk(void) {
   Pscanf(&A);
   Pscanf(&B);
 
-  //C = Pmult(A, B);
+  C = Pmult(&A, &B);
 
   Pprintf(A);
   Pprintf(B);

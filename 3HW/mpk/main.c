@@ -80,7 +80,7 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
   A1A2_sum.p = A1A2_plus_B1B2.p;
 
   B1B2_sum.len = B1.len;
-  B1B2_sum.p = A1A2_plus_B1B2.p + A1.len + 1;
+  B1B2_sum.p = A1A2_plus_B1B2.p + A1.len;
 
   A1A2_B1B2sum(&A1, &A2, &B1, &B2, &A1A2_sum, &B1B2_sum);
 
@@ -230,13 +230,13 @@ struct Poly *merge_terms(const struct Poly *A, const struct Poly *B, const struc
   assert((res -> len) == (2 * (A -> len) + 1));
 
   for(i = 0; i < A -> len; ++i) {
-    res -> p[i] = A -> p[i];
-    //res -> p[i + beginB] += B -> p[i];
-    res -> p[i + beginC] = C -> p[i];
-  }
-  for(i = 0; i < B -> len; ++i) {
+    res -> p[i] += A -> p[i];
     res -> p[i + beginB] += B -> p[i];
+    res -> p[i + beginC] += C -> p[i];
   }
+  //for(i = 0; i < B -> len; ++i) {
+  //  res -> p[i + beginB] += B -> p[i];
+  //}
   return res;
 }
 

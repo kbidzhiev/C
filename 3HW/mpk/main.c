@@ -19,12 +19,15 @@ struct Poly termA1(const struct Poly *A);
 struct Poly termA2(const struct Poly *A);
 
 struct Poly Psum(const struct Poly *lhs, const struct Poly *rhs);
+
 void A1A2_B1B2sum(const struct Poly *A1, const struct Poly *A2,
                          const struct Poly *B1, const struct Poly *B2,
                          struct Poly *A1A2_sum, struct Poly *B1B2_sum
                          );
-struct Poly *merge_terms(const struct Poly *kar, struct Poly *res);
 
+
+struct Poly *merge_terms_old(const struct Poly *kar, struct Poly *res);
+struct Poly *merge_terms(const struct Poly *A, const struct Poly *B, const struct Poly *C, struct Poly *res);
 
 struct Poly *karatsuba_terms(struct Poly *A, const struct Poly *B, const struct Poly *C) {
   unsigned i;
@@ -39,50 +42,42 @@ struct Poly A1B1_in_res(const struct Poly *res);
 struct Poly A2B2_in_res(const struct Poly *res);
 
 struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs);
-struct Poly *Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res) {
+
+
+struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
+  struct Poly A1B1_mult, A2B2_mult;
+  struct Poly A1A2_sum, B1B2_sum;
   struct Poly karat;
 
-  struct Poly A1B1_mult = A1B1_in_res(res);
-  struct Poly A2B2_mult = A2B2_in_res(res);
   struct Poly A1 = termA1(lhs);
   struct Poly A2 = termA2(lhs);
   struct Poly B1 = termA1(rhs);
   struct Poly B2 = termA2(rhs);
-  struct Poly A1A2_sum = Pcalloc(A1.len);
-  struct Poly B1B2_sum = Pcalloc(B1.len);
-  
+  struct Poly res = Pcalloc((lhs -> len) + (rhs -> len) - 1);
+
   if (lhs -> len == 2) {
-    Pmult_classic(lhs, rhs, res);
+    Pmult_classic(lhs, rhs, &res);
     return res;
   }
 
-  Pmult_impl(&A1, &B1, &A1B1_mult);
-  Pmult_impl(&A2, &B2, &A2B2_mult);
 
-  A1A2_B1B2sum(&A1, &A2, &B1, &B2, &A1A2_sum, &B1B2_sum);
+  A1B1_mult = Pmult(&A1, &B1);
+  A2B2_mult = Pmult(&A2, &B2);
+
+  A1A2_sum = Psum(&A1, &A2);
+  B1B2_sum = Psum(&B1, &B2);
   karat = Pmult(&A1A2_sum, &B1B2_sum);
   karatsuba_terms(&karat, &A1B1_mult, &A2B2_mult);
 
   Pfree(&A1A2_sum);
   Pfree(&B1B2_sum);
 
-  merge_terms(&karat, res);
+  merge_terms(&A1B1_mult, &karat, &A2B2_mult, &res);
 
-  Pfree(&A1A2_sum);
-  Pfree(&B1B2_sum);
+  Pfree(&A1B1_mult);
+  Pfree(&A2B2_mult);
   Pfree(&karat);
 
-  return res;
-}
-
-struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
-  struct Poly res = Pcalloc((lhs -> len) + (rhs -> len) - 1);
-  if (lhs -> len == 2) {
-    Pmult_classic(lhs, rhs, &res);
-    return res;
-  }
-
-  Pmult_impl(lhs, rhs, &res);
   return res;
 }
 
@@ -188,7 +183,7 @@ struct Poly Psum(const struct Poly *lhs, const struct Poly *rhs) {
   return sum;
 }
 
-struct Poly *merge_terms(const struct Poly *kar, struct Poly *res) {
+struct Poly *merge_terms_old(const struct Poly *kar, struct Poly *res) {
   unsigned i;
   unsigned begin = (kar -> len + 1)/2;
   assert((res -> len) == (2 * (kar -> len) + 1));
@@ -207,6 +202,25 @@ struct Poly A1B1_in_res(const struct Poly *res) {
   struct Poly A1B1 = {len, res -> p};
   return A1B1;
 }
+
+struct Poly *merge_terms(const struct Poly *A, const struct Poly *B, const struct Poly *C, struct Poly *res) {
+  unsigned i;
+  unsigned beginB = (B -> len + 1)/2;
+  unsigned beginC = (C -> len + 1);
+  assert((A -> len) == (B -> len));
+  assert((B -> len) == (C -> len));
+  assert((res -> len) == (2 * (A -> len) + 1));
+
+  for(i = 0; i < A -> len; ++i) {
+    res -> p[i] = A -> p[i];
+    res -> p[i + beginC] = C -> p[i];
+  }
+  for(i = 0; i < B -> len; ++i) {
+    res -> p[i + beginB] += B -> p[i];
+  }
+  return res;
+}
+
 struct Poly A2B2_in_res(const struct Poly *res) {
   /* A1 and B1 are half size of A
    * len(A1*B1) = 2*len(A1) - 1 == len(A) - 1

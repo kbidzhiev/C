@@ -50,6 +50,7 @@ struct Poly *karatsuba_terms(struct Poly *A, const struct Poly *B, const struct 
 struct Poly A1B1_in_res(const struct Poly *res);
 struct Poly A2B2_in_res(const struct Poly *res);
 
+
 struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs);
 
 
@@ -69,13 +70,16 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
     return res;
   }
 
-  //A1B1_mult = A1B1_in_res(const struct Poly *res);
-  //A2B2_mult = A2B2_in_res(const struct Poly *res);
   A1B1_mult = Pmult(&A1, &B1);
   A2B2_mult = Pmult(&A2, &B2);
 
-  A1A2_sum = Psum(&A1, &A2);
-  B1B2_sum = Psum(&B1, &B2);
+  //A1A2_sum = Psum(&A1, &A2);
+  //B1B2_sum = Psum(&B1, &B2);
+  A1A2_sum = Pcalloc(A1.len);
+  B1B2_sum = Pcalloc(B1.len);
+  A1A2_B1B2sum(&A1, &A2, &B1, &B2, &A1A2_sum, &B1B2_sum);
+
+
   karat = Pmult(&A1A2_sum, &B1B2_sum);
   karatsuba_terms(&karat, &A1B1_mult, &A2B2_mult);
 
@@ -84,8 +88,8 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
 
   merge_terms(&A1B1_mult, &karat, &A2B2_mult, &res);
 
-  //Pfree(&A1B1_mult);
-  //Pfree(&A2B2_mult);
+  Pfree(&A1B1_mult);
+  Pfree(&A2B2_mult);
   Pfree(&karat);
 
   return res;

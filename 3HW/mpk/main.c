@@ -58,6 +58,7 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
   struct Poly A1B1_mult, A2B2_mult;
   struct Poly A1A2_sum, B1B2_sum;
   struct Poly karat;
+  struct Poly A1A2_plus_B1B2;
 
   struct Poly A1 = termA1(lhs);
   struct Poly A2 = termA2(lhs);
@@ -75,16 +76,22 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
 
   //A1A2_sum = Psum(&A1, &A2);
   //B1B2_sum = Psum(&B1, &B2);
-  A1A2_sum = Pcalloc(A1.len);
-  B1B2_sum = Pcalloc(B1.len);
+  A1A2_plus_B1B2 = Pcalloc(A1.len + B1.len);
+  A1A2_sum.len = A1.len;
+  A1A2_sum.p = A1A2_plus_B1B2.p;
+
+  B1B2_sum.len = B1.len;
+  B1B2_sum.p = A1A2_plus_B1B2.p + A1.len + 1;
+
   A1A2_B1B2sum(&A1, &A2, &B1, &B2, &A1A2_sum, &B1B2_sum);
 
 
   karat = Pmult(&A1A2_sum, &B1B2_sum);
   karatsuba_terms(&karat, &A1B1_mult, &A2B2_mult);
 
-  Pfree(&A1A2_sum);
-  Pfree(&B1B2_sum);
+  //Pfree(&A1A2_sum);
+  //Pfree(&B1B2_sum);
+  Pfree(&A1A2_plus_B1B2);
 
   merge_terms(&A1B1_mult, &karat, &A2B2_mult, &res);
 

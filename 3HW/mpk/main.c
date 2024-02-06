@@ -14,15 +14,6 @@ void Pscanf(struct Poly *pol);
 void Pprintf(const struct Poly pol);
 
 struct Poly *Pmult_classic(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res);
-struct Poly *Pmult_classic2deg(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res){
-  assert(3 == res -> len);
-  assert(2 == lhs -> len);
-  assert(lhs -> len == rhs -> len);
-  res ->p[0] = (lhs ->p[0])*(rhs ->p[0]);
-  res ->p[1] = (lhs ->p[0])*(rhs ->p[1]) + (lhs ->p[1])*(rhs ->p[0]); 
-  res ->p[2] = (lhs ->p[1])*(rhs ->p[1]);
-  return res;
-}
 
 struct Poly termA1(const struct Poly *A);
 struct Poly termA2(const struct Poly *A);
@@ -66,7 +57,7 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
   struct Poly B2 = termA2(rhs);
   struct Poly res = Pcalloc((lhs -> len) + (rhs -> len) - 1);
 
-  if (lhs -> len == 2) {
+  if (lhs -> len <= (1u<<5)) {
     Pmult_classic(lhs, rhs, &res);
     return res;
   }

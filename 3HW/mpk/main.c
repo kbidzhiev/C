@@ -66,9 +66,12 @@ struct Poly *Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct P
     return res;
   }
 
-  A1B1_mult = Pmult(&A1, &B1);
-  A2B2_mult = Pmult(&A2, &B2);
-
+  //A1B1_mult = Pmult(&A1, &B1);
+  //A2B2_mult = Pmult(&A2, &B2);
+  A1B1_mult = A1B1_in_res(res);
+  A2B2_mult = A2B2_in_res(res);
+  Pmult_impl(&A1, &B1, &A1B1_mult);
+  Pmult_impl(&A2, &B2, &A2B2_mult);
 
   A1A2_plus_B1B2 = Pcalloc(A1.len + B1.len);
   A1A2_sum.len = A1.len;
@@ -85,10 +88,11 @@ struct Poly *Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct P
 
   Pfree(&A1A2_plus_B1B2);
 
-  merge_terms(&A1B1_mult, &karat, &A2B2_mult, res);
+  //merge_terms(&A1B1_mult, &karat, &A2B2_mult, res);
+  merge_terms_old(&karat, res);
 
-  Pfree(&A1B1_mult);
-  Pfree(&A2B2_mult);
+  //Pfree(&A1B1_mult);
+  //Pfree(&A2B2_mult);
   Pfree(&karat);
 
   return res;

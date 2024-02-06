@@ -1,8 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "tests.h"
+#include <assert.h>
 
-#define DEBUG 1
+
+#define TESTS 0
+#if TESTS 
+#include "tests.h"
+#endif
+
+#define DEBUG 0
 
 
 struct Poly {
@@ -45,8 +51,6 @@ struct Poly *Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct P
 struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) { 
   struct Poly res = Pcalloc((lhs -> len) + (rhs -> len) - 1);
   Pmult_impl(lhs, rhs, &res); 
-
-
   return res;
 }
 
@@ -61,13 +65,11 @@ struct Poly *Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct P
   struct Poly B1 = termA1(rhs);
   struct Poly B2 = termA2(rhs);
 
-  if (lhs -> len <= (1u<<5)) {
+  if (lhs -> len <= (5)) {
     Pmult_classic(lhs, rhs, res);
     return res;
   }
 
-  //A1B1_mult = Pmult(&A1, &B1);
-  //A2B2_mult = Pmult(&A2, &B2);
   A1B1_mult = A1B1_in_res(res);
   A2B2_mult = A2B2_in_res(res);
   Pmult_impl(&A1, &B1, &A1B1_mult);
@@ -88,14 +90,21 @@ struct Poly *Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct P
 
   Pfree(&A1A2_plus_B1B2);
 
-  //merge_terms(&A1B1_mult, &karat, &A2B2_mult, res);
   merge_terms_old(&karat, res);
 
-  //Pfree(&A1B1_mult);
-  //Pfree(&A2B2_mult);
   Pfree(&karat);
 
   return res;
+}
+
+void canonic_form(struct Poly *pol) {
+  unsigned deg = (pol -> len) - 1; //size is length of pol
+  for (; deg > 0; --deg) {
+    if (0 != (pol -> p[deg])) {
+      (pol -> len) = deg + 1;
+      break;
+    }
+  }
 }
 
 void mpk(void) {
@@ -114,10 +123,9 @@ void mpk(void) {
   Pscanf(&B);
 
   C = Pmult(&A, &B);
-
-  Pprintf(A);
-  Pprintf(B);
-
+  canonic_form(&C);
+  Pprintf(C);
+ 
   Pfree(&C);
   Pfree(&A);
   Pfree(&B);
@@ -125,8 +133,10 @@ void mpk(void) {
 }
 
 int main(void){
+#if TESTS
   test_all();
-  //mpk();
+#endif
+  mpk();
   return 0;
 }
 
@@ -154,8 +164,8 @@ void Pscanf(struct Poly *pol) {
 
 void Pprintf(const struct Poly pol) {
   for(unsigned i = 0; i < pol.len; ++i)
-    printf("%2d ", pol.p[i]);
-  printf("\n");
+    printf("%d ", pol.p[i]);
+  //printf("\n");
 }
 
 struct Poly *Pmult_classic(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res) {

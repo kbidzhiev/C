@@ -123,6 +123,7 @@ void test_mult_time(int i, int l) {
   Ckar = Pmult(&A, &B);
   timespec_get(&end, TIME_UTC);
 
+  canonic_form(&Ckar);
 
   Pfree(&A);
   Pfree(&B);

@@ -3,12 +3,12 @@
 #include <assert.h>
 
 
-#define TESTS 0
+#define TESTS 1
 #if TESTS 
 #include "tests.h"
 #endif
 
-#define DEBUG 0
+#define DEBUG 1
 
 
 struct Poly {
@@ -35,8 +35,7 @@ void A1A2_B1B2sum(const struct Poly *A1, const struct Poly *A2,
                   );
 
 
-struct Poly *merge_terms_old(const struct Poly *kar, struct Poly *res);
-struct Poly *merge_terms(const struct Poly *A, const struct Poly *B, const struct Poly *C, struct Poly *res);
+struct Poly *merge_terms(const struct Poly *kar, struct Poly *res);
 
 struct Poly *karatsuba_terms(struct Poly *A, const struct Poly *B, const struct Poly *C);
 
@@ -65,7 +64,7 @@ struct Poly *Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct P
   struct Poly B1 = termA1(rhs);
   struct Poly B2 = termA2(rhs);
 
-  if (lhs -> len <= (5)) {
+  if (lhs -> len <= (1u << 5)) {
     Pmult_classic(lhs, rhs, res);
     return res;
   }
@@ -90,7 +89,7 @@ struct Poly *Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct P
 
   Pfree(&A1A2_plus_B1B2);
 
-  merge_terms_old(&karat, res);
+  merge_terms(&karat, res);
 
   Pfree(&karat);
 
@@ -224,7 +223,7 @@ struct Poly *karatsuba_terms(struct Poly *A, const struct Poly *B, const struct 
   return A;
 }
 
-struct Poly *merge_terms_old(const struct Poly *kar, struct Poly *res) {
+struct Poly *merge_terms(const struct Poly *kar, struct Poly *res) {
   unsigned i;
   unsigned begin = (kar -> len + 1)/2;
 #if DEBUG
@@ -245,25 +244,6 @@ struct Poly A1B1_in_res(const struct Poly *res) {
   return A1B1;
 }
 
-struct Poly *merge_terms(const struct Poly *A, const struct Poly *B, const struct Poly *C, struct Poly *res) {
-  unsigned i;
-  unsigned beginB = (B -> len + 1)/2;
-  unsigned beginC = (C -> len + 1);
-#if DEBUG
-  assert((A -> len) == (B -> len));
-  assert((B -> len) == (C -> len));
-  assert((res -> len) == (2 * (A -> len) + 1));
-#endif
-  for(i = 0; i < A -> len; ++i) {
-    res -> p[i] += A -> p[i];
-    res -> p[i + beginB] += B -> p[i];
-    res -> p[i + beginC] += C -> p[i];
-  }
-  //for(i = 0; i < B -> len; ++i) {
-  //  res -> p[i + beginB] += B -> p[i];
-  //}
-  return res;
-}
 
 struct Poly A2B2_in_res(const struct Poly *res) {
   /* A1 and B1 are half size of A

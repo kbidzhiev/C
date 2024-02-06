@@ -43,19 +43,26 @@ struct Poly A2B2_in_res(const struct Poly *res);
 
 
 struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs);
+//struct Poly Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res);
 
+struct Poly Pmult_impl(const struct Poly *lhs, const struct Poly *rhs) { 
+  struct Poly res = Pcalloc((lhs -> len) + (rhs -> len) - 1);
+
+
+  return res;
+}
 
 struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
   struct Poly A1A2_sum, B1B2_sum;
   struct Poly A1B1_mult, A2B2_mult;
   struct Poly karat;
   struct Poly A1A2_plus_B1B2;
+  struct Poly res = Pcalloc((lhs -> len) + (rhs -> len) - 1);
 
   struct Poly A1 = termA1(lhs);
   struct Poly A2 = termA2(lhs);
   struct Poly B1 = termA1(rhs);
   struct Poly B2 = termA2(rhs);
-  struct Poly res = Pcalloc((lhs -> len) + (rhs -> len) - 1);
 
   if (lhs -> len <= (1u<<5)) {
     Pmult_classic(lhs, rhs, &res);

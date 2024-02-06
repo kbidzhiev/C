@@ -139,6 +139,6 @@ void test_all(void) {
   test_Pmult(5, 16);
   test_Pmult(6, 128);
   //test_Pmult(7, (1u << 16));
-  test_mult_time(8, (1u << 16));
+  test_mult_time(8, (1u << 18));
   printf("All tests are ok\n");
 }

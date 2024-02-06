@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include "tests.h"
 
+#define DEBUG 1
+
+
 struct Poly {
   unsigned len;
   int *p;
@@ -21,43 +24,37 @@ struct Poly termA2(const struct Poly *A);
 struct Poly Psum(const struct Poly *lhs, const struct Poly *rhs);
 
 void A1A2_B1B2sum(const struct Poly *A1, const struct Poly *A2,
-                         const struct Poly *B1, const struct Poly *B2,
-                         struct Poly *A1A2_sum, struct Poly *B1B2_sum
-                         );
+                  const struct Poly *B1, const struct Poly *B2,
+                  struct Poly *A1A2_sum, struct Poly *B1B2_sum
+                  );
 
 
 struct Poly *merge_terms_old(const struct Poly *kar, struct Poly *res);
 struct Poly *merge_terms(const struct Poly *A, const struct Poly *B, const struct Poly *C, struct Poly *res);
 
-struct Poly *karatsuba_terms(struct Poly *A, const struct Poly *B, const struct Poly *C) {
-  unsigned i;
-  assert((A -> len) == (B -> len));
-  assert((B -> len) == (C -> len));
-  for(i = 0; i < (A -> len); ++i)
-    A -> p[i] -= (B -> p[i]) + (C -> p[i]);
-  return A;
-}
+struct Poly *karatsuba_terms(struct Poly *A, const struct Poly *B, const struct Poly *C);
+
 
 struct Poly A1B1_in_res(const struct Poly *res);
 struct Poly A2B2_in_res(const struct Poly *res);
 
 
 struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs);
-//struct Poly Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res);
+struct Poly *Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res);
 
-struct Poly Pmult_impl(const struct Poly *lhs, const struct Poly *rhs) { 
+struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) { 
   struct Poly res = Pcalloc((lhs -> len) + (rhs -> len) - 1);
+  Pmult_impl(lhs, rhs, &res); 
 
 
   return res;
 }
 
-struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
+struct Poly *Pmult_impl(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res) {
   struct Poly A1A2_sum, B1B2_sum;
   struct Poly A1B1_mult, A2B2_mult;
   struct Poly karat;
   struct Poly A1A2_plus_B1B2;
-  struct Poly res = Pcalloc((lhs -> len) + (rhs -> len) - 1);
 
   struct Poly A1 = termA1(lhs);
   struct Poly A2 = termA2(lhs);
@@ -65,7 +62,7 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
   struct Poly B2 = termA2(rhs);
 
   if (lhs -> len <= (1u<<5)) {
-    Pmult_classic(lhs, rhs, &res);
+    Pmult_classic(lhs, rhs, res);
     return res;
   }
 
@@ -88,7 +85,7 @@ struct Poly Pmult(const struct Poly *lhs, const struct Poly *rhs) {
 
   Pfree(&A1A2_plus_B1B2);
 
-  merge_terms(&A1B1_mult, &karat, &A2B2_mult, &res);
+  merge_terms(&A1B1_mult, &karat, &A2B2_mult, res);
 
   Pfree(&A1B1_mult);
   Pfree(&A2B2_mult);
@@ -159,9 +156,10 @@ void Pprintf(const struct Poly pol) {
 
 struct Poly *Pmult_classic(const struct Poly *lhs, const struct Poly *rhs, struct Poly *res) {
   unsigned i, j, k;
-
+#if DEBUG
   assert((lhs -> len) == (rhs -> len));
   assert((lhs -> len) + (rhs -> len) - 1 == (res -> len));
+#endif
   for(j = 0; j < rhs -> len; ++j) {
     k = j;
     for(i = 0; i < lhs -> len; ++i) {
@@ -193,17 +191,31 @@ struct Poly termA2(const struct Poly *A) {
 struct Poly Psum(const struct Poly *lhs, const struct Poly *rhs) {
   unsigned i;
   struct Poly sum = Pcalloc(lhs -> len);
+#if DEBUG
   assert(lhs -> len == rhs -> len);
+#endif
   for(i = 0; i < (lhs -> len); ++i)
     sum.p[i] = (lhs -> p[i]) + (rhs ->p[i]);
   return sum;
 }
 
+struct Poly *karatsuba_terms(struct Poly *A, const struct Poly *B, const struct Poly *C) {
+  unsigned i;
+#if DEBUG
+  assert((A -> len) == (B -> len));
+  assert((B -> len) == (C -> len));
+#endif
+  for(i = 0; i < (A -> len); ++i)
+    A -> p[i] -= (B -> p[i]) + (C -> p[i]);
+  return A;
+}
+
 struct Poly *merge_terms_old(const struct Poly *kar, struct Poly *res) {
   unsigned i;
   unsigned begin = (kar -> len + 1)/2;
+#if DEBUG
   assert((res -> len) == (2 * (kar -> len) + 1));
-
+#endif
   for(i = 0; i < kar -> len; ++i)
     res -> p[i + begin] += kar -> p[i];
   return res;
@@ -223,10 +235,11 @@ struct Poly *merge_terms(const struct Poly *A, const struct Poly *B, const struc
   unsigned i;
   unsigned beginB = (B -> len + 1)/2;
   unsigned beginC = (C -> len + 1);
+#if DEBUG
   assert((A -> len) == (B -> len));
   assert((B -> len) == (C -> len));
   assert((res -> len) == (2 * (A -> len) + 1));
-
+#endif
   for(i = 0; i < A -> len; ++i) {
     res -> p[i] += A -> p[i];
     res -> p[i + beginB] += B -> p[i];
@@ -249,15 +262,17 @@ struct Poly A2B2_in_res(const struct Poly *res) {
 }
 
 void A1A2_B1B2sum(const struct Poly *A1, const struct Poly *A2,
-                         const struct Poly *B1, const struct Poly *B2,
-                         struct Poly *A1A2_sum, struct Poly *B1B2_sum
-                         ) {
+                  const struct Poly *B1, const struct Poly *B2,
+                  struct Poly *A1A2_sum, struct Poly *B1B2_sum
+                  ) {
   unsigned i;
+#if DEBUG
   assert(A1 -> len == A2 -> len);
   assert(A2 -> len == B1 -> len);
   assert(B1 -> len == B2 -> len);
   assert(B2 -> len == A1A2_sum -> len);
   assert(A1A2_sum -> len == B1B2_sum -> len);
+#endif
   for(i = 0; i < A1 -> len; ++i) {
     A1A2_sum -> p[i] = A1 -> p[i] + A2 -> p[i];
     B1B2_sum -> p[i] = B1 -> p[i] + B2 -> p[i];

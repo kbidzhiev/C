@@ -129,7 +129,7 @@ int main(void){
 #if TESTS
   test_all();
 #endif
-  mpk();
+  //mpk();
   return 0;
 }
 

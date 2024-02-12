@@ -15,13 +15,16 @@ int sum_arr_elem(int *sizes, int nelts, int begin, int num) {
   return size;
 }
 
+void *arr_elem(void *mem, int* sizes, int nelts, int elem_id) {
+  return (void *)((char*) mem + sum_arr_elem(sizes, nelts, 0, elem_id));
+}
+
 void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
   int i, j, k, nbytes;
   int size = r - l + 1;
   void *arr1, *arr2;
   void *tmp;
-  arr1 = (void *)((char*) mem + sum_arr_elem(sizes, nelts, 0, l));
-  arr2 = (void *)((char*) mem + sum_arr_elem(sizes, nelts, 0, m));
+
 
   // compute size required for malloc
   nbytes = sum_arr_elem(sizes, nelts, l, size);
@@ -32,7 +35,11 @@ void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
   //copy elements from [l;m] and [m+1;r] to *tmp
   i = 0, j = l, k = m + 1;
   for(; i < size; ++i) {
-    if( cmp()) 
+    arr_el_j = arr_elem(mem, sizes, nelts, j);
+    arr_el_k = arr_elem(mem, sizes, nelts, k);
+    if( cmp(arr_el_j, sizes[j], arr_el_k, sizes[k]) <= 0) {
+      memcpy(void *dest, const void *src, size_t n) 
+    }
   }
   //copy remaining elements
   //copy all from *tmp to *mem

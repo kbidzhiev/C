@@ -51,21 +51,19 @@ void merge_sort(int *arr, int n) {
 #endif
 
 
-typedef int (*xcmp_t)(void *lhs, int lsz, void *rhs, int rsz);
-
-
-void xmsort_imp(void *mem, int l, int r);
+//typedef int (*xcmp_t)(void *lhs, int lsz, void *rhs, int rsz);
+//void xmsort_imp(void *mem, int l, int r);
 
 
 
 int find_end(int *sizes, int nelts);
 int find_mid(int *sizes, int nelts);
 
-void xmsort(void *mem, int *sizes, int nelts, xcmp_t cmp) {
-  int l = 0;
-  int r = find_end(sizes, nelts);
-  xmsort_imp(*mem, l, r);
-}
+//void xmsort(void *mem, int *sizes, int nelts, xcmp_t cmp) {
+//  int l = 0;
+//  int r = find_end(sizes, nelts);
+//  xmsort_imp(*mem, l, r);
+//}
 
 int find_boundary(int *sizes, int nelts, int boundary) {
   int end = 0, i;

@@ -1,83 +1,43 @@
-#include <cm.h>
+#include "cm.h"
 #include <stdlib.h>
 
 
-#if 0
-void merge(int *arr, int l, int m, int r) {
-  int *tmp;
-  int i, j, k;
-  int size = r - l + 1;
+typedef int (*xcmp_t)(void *lhs, int lsz, void *rhs, int rsz);
 
-  assert(size > 0);
-  tmp = (int*)malloc(size * sizeof(int));
-  if (NULL == tmp) {
-    abort();
+int compute_size(int *sizes, int begin, int num) {
+  int i, size = 0;
+  for(i = 0; i < num; ++i) {
+    size += sizes[begin + i]; 
   }
-
-  i = 0;
-  j = l;
-  k = m + 1;
-  for(i = 0; (j < m + 1) && (k < r + 1); ++i) {
-    tmp[i] = (arr[j] <= arr[k]) ? arr[j++] : arr[k++];
-  }
-
-  for(; i < size; ++i) {
-    if((j == m + 1) && (k < r + 1))
-      tmp[i] = arr[k++];
-    if((k == r + 1) && (j < m + 1))
-      tmp[i] = arr[j++];
-  }
-
-  for (i = 0; i < size; ++i){
-    arr[i + l] = tmp[i];
-  }
-  free(tmp);
+  return size;
 }
 
+void merge(void *mem, int *sizes, int num, int l, int m, int r, xcmp_t cmp) {
+  int i, j, k, size = r - l + 1;
+  void *tmp;
+  // compute size required for malloc
+  // allocate memory for merging `size` elements
+  //
+  i = 0, j = l, k = m + 1;
 
-void merge_sort_imp(int *arr, int l, int r) {
-  int m;
+  //copy elements from [l;m] and [m+1;r] to *tmp
+  //copy remaining elements
+  //copy all from *tmp to *mem
+  free(tmp);//free tmp !
+}
+
+void xmsort_impl(void *mem, int *sizes, int nelts, int l, int r, xcmp_t cmp) {
+  int m = l + (r - l) / 2;
   if (l >= r)
     return;
-  m = (l + r) / 2;
-  merge_sort_imp(arr, l, m);
-  merge_sort_imp(arr, m + 1, r);
-  merge(arr, l, m, r);
-}
-
-void merge_sort(int *arr, int n) {
-  merge_sort_imp(arr, 0, n - 1);
-}
-#endif
-
-
-//typedef int (*xcmp_t)(void *lhs, int lsz, void *rhs, int rsz);
-//void xmsort_imp(void *mem, int l, int r);
-
-
-
-int find_end(int *sizes, int nelts);
-int find_mid(int *sizes, int nelts);
-
-//void xmsort(void *mem, int *sizes, int nelts, xcmp_t cmp) {
-//  int l = 0;
-//  int r = find_end(sizes, nelts);
-//  xmsort_imp(*mem, l, r);
-//}
-
-int find_boundary(int *sizes, int nelts, int boundary) {
-  int end = 0, i;
-  for (i = 0; i < boundary; ++i)
-    end += sizes[i];
-  return end;
-}
-
-int find_end(int *sizes, int nelts) {
-  return find_boundary(sizes, nelts, nelts - 1);
-}
-int find_mid(int *sizes, int nelts) {
-  return find boundary(sizes, nelts, nelts/2);
+  xmsort_impl(mem, sizes, nelts, l, m, cmp);
+  xmsort_impl(mem, sizes, nelts, m + 1, r, cmp);
+  merge(mem, sizes, nelts, l, m, r, cmp);
 }
 
 
+
+void xmsort(void *mem, int *sizes, int nelts, xcmp_t cmp) {
+  xmsort_imp(mem, sizes, nelts, 0, nelts - 1, xcmp_t cmp);
+}
 

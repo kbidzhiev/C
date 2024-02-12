@@ -1,6 +1,8 @@
 #include "cm.h"
 #include <stdlib.h>
 #include <assert.h>
+#include <limits.h>
+
 
 typedef int (*xcmp_t)(void *lhs, int lsz, void *rhs, int rsz);
 
@@ -13,15 +15,25 @@ int sum_arr_elem(int *sizes, int nelts, int begin, int num) {
   return size;
 }
 
-void merge(void *mem, int *sizes, int num, int l, int m, int r, xcmp_t cmp) {
-  int i, j, k, size = r - l + 1;
+void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
+  int i, j, k, nbytes;
+  int size = r - l + 1;
+  void *arr1, *arr2;
   void *tmp;
+  arr1 = (void *)((char*) mem + sum_arr_elem(sizes, nelts, 0, l));
+  arr2 = (void *)((char*) mem + sum_arr_elem(sizes, nelts, 0, m));
+
   // compute size required for malloc
+  nbytes = sum_arr_elem(sizes, nelts, l, size);
+
   // allocate memory for merging `size` elements
-  //
-  i = 0, j = l, k = m + 1;
+  tmp = malloc(nbytes * CHAR_BIT);
 
   //copy elements from [l;m] and [m+1;r] to *tmp
+  i = 0, j = l, k = m + 1;
+  for(; i < size; ++i) {
+    if( cmp()) 
+  }
   //copy remaining elements
   //copy all from *tmp to *mem
   free(tmp);//free tmp !

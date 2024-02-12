@@ -19,7 +19,6 @@ void test_sum_arr_elem(int k) {
   begin = 1, num = 5;
   assert(25 == sum_arr_elem(sizes, 6, begin, num));
 
-
   printf("%d. test_sum_arr_elem - OK;\n", k);
 }
 

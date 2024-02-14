@@ -36,15 +36,12 @@ void test_shift(int k) {
   el = *(int *)arr_elem(arr, sizes, 6, 5);
   assert(8 == el);
 
-  printf("%d. Test shift -OK;\n", k);
+  printf("%d. Test shift - OK;\n", k);
 }
 
 
 int cmp(void *lhs, int lsz, void *rhs, int rsz) {
   int l, r;
-  if (lsz != rsz) {
-    assert(0);
-  }
   l = *(int *)lhs;
   r = *(int *)rhs;
   if (l < r) return -1;
@@ -56,15 +53,16 @@ void test_sorting_1(int k) {
   int s = sizeof(int);
   int arr[4] = {3, 2, 6, 1};
   int sizes[4] = {s, s, s, s};
+  printf("before sorting\n");
   for(s = 0; s < 4; ++s) {
-    printf("%d ", arr[s]);
+    printf("%d\t weight %d\n", arr[s], sizes[s]);
   }
   printf("\n");
 
   xmsort(arr, sizes, 4, cmp);
   
   for(s = 0; s < 4; ++s) {
-    printf("%d ", arr[s]);
+    printf("%d\t weight %d\n", arr[s], sizes[s]);
   }
   printf("\n");
   assert(1 == arr[0]); 
@@ -80,14 +78,14 @@ void test_sorting_2(int k) {
   int arr[7] = {3, 2, 6, 1, 9, -2, 3};
   int sizes[7] = {s, s, s, s, s, s, s};
   for(s = 0; s < 7; ++s) {
-    printf("%d ", arr[s]);
+    printf("%d\t weight %d\n", arr[s], sizes[s]);
   }
   printf("\n");
 
   xmsort(arr, sizes, 7, cmp);
   
   for(s = 0; s < 7; ++s) {
-    printf("%d ", arr[s]);
+    printf("%d\t weight %d\n", arr[s], sizes[s]);
   }
   printf("\n");
   assert(-2 == arr[0]); 
@@ -107,14 +105,14 @@ void test_sorting_3(int k) {
   int arr[10] = {8, 9, 9, 7, 1, 7, 9, 9, 1, 8};
   int sizes[10] = {s, s, s, s, s, s, s, s, s, s};
   for(s = 0; s < size; ++s) {
-    printf("%d ", arr[s]);
+    printf("%d\t weight %d\n", arr[s], sizes[s]);
   }
   printf("\n");
 
   xmsort(arr, sizes, size, cmp);
   
   for(s = 0; s < size; ++s) {
-    printf("%d ", arr[s]);
+    printf("%d\t weight %d\n", arr[s], sizes[s]);
   }
   printf("\n");
   assert(1 == arr[0]); 

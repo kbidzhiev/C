@@ -16,11 +16,12 @@ int sum_arr_elem(int *sizes, int nelts, int begin, int num) {
 }
 
 void *arr_elem(void *mem, int* sizes, int nelts, int elem_id) {
-  return (void *)((char*) mem + sum_arr_elem(sizes, nelts, 0, elem_id));
+  int shift = sum_arr_elem(sizes, nelts, 0, elem_id);
+  return (void *)((char*) mem + shift);
 }
 
 void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
-  int i, j, k, nbytes;
+  int i, j, k, nbytes, min;
   int size = r - l + 1;
   void *arr1, *arr2;
   void *tmp;
@@ -34,14 +35,23 @@ void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
 
   //copy elements from [l;m] and [m+1;r] to *tmp
   i = 0, j = l, k = m + 1;
-  for(; i < size; ++i) {
+  for(; i < (j < m + 1) && (k < r + 1); ++i) {
     arr_el_j = arr_elem(mem, sizes, nelts, j);
     arr_el_k = arr_elem(mem, sizes, nelts, k);
     if( cmp(arr_el_j, sizes[j], arr_el_k, sizes[k]) <= 0) {
-      memcpy(void *dest, const void *src, size_t n) 
+      memcpy(tmp, arr_el_j, nelts[j]);
+      tmp = (void *)((char*) tmp + nelts[j]);
+      ++j;
+    } else { 
+      memcpy(tmp, arr_el_k, nelts[k]);
+      tmp = (void *)((char*) tmp + nelts[k]);
+      ++k;
     }
   }
   //copy remaining elements
+
+  
+  
   //copy all from *tmp to *mem
   free(tmp);//free tmp !
 }

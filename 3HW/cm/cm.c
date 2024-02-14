@@ -54,17 +54,14 @@ void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
     if(j < m + 1) {
       size = sizes[j];
       memcpy(tmp, arr_el_j, size);
-
-      tmp = (void *)((char*) tmp + size);
       arr_el_j = (void *)((char*) arr_el_j + sizes[++j]);
     } 
     if (k < r + 1) { 
       size = sizes[k];
       memcpy(tmp, arr_el_k, size);
-
-      tmp = (void *)((char*) tmp + size);
       arr_el_k = (void *)((char*) arr_el_k + sizes[++k]);
     }
+    tmp = (void *)((char*) tmp + size);
     tmp_sizes[i] = size;
   }
 

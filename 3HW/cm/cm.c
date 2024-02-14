@@ -28,7 +28,7 @@ void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
   // compute size required for malloc
   nbytes = sum_arr_elem(sizes, nelts, l, length);
 
-  // allocate memory for merging `size` elements
+  // allocate memory for merging `sizes` elements
   tmp = malloc(nbytes * CHAR_BIT);
   tmp_sizes = (int *)malloc(length * sizeof(int));
   //copy elements from [l;m] and [m+1;r] to *tmp
@@ -39,18 +39,14 @@ void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
     if(cmp(arr_el_j, sizes[j], arr_el_k, sizes[k]) <= 0) {
       size = sizes[j];
       memcpy(tmp, arr_el_j, size);
-      tmp_sizes[i] = size;
-      
-      tmp = (void *)((char*) tmp + size);
       arr_el_j = (void *)((char*) arr_el_j + sizes[++j]);
     } else { 
-      size = sizes[j];
+      size = sizes[k];
       memcpy(tmp, arr_el_k, size);
-      tmp_sizes[i] = size;
-
-      tmp = (void *)((char*) tmp + size);
       arr_el_k = (void *)((char*) arr_el_k + sizes[++k]);
     }
+    tmp_sizes[i] = size;
+    tmp = (void *)((char*) tmp + size);
   }
   
   //copy remaining elements
@@ -58,18 +54,18 @@ void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
     if(j < m + 1) {
       size = sizes[j];
       memcpy(tmp, arr_el_j, size);
-      tmp_sizes[i] = size;
 
       tmp = (void *)((char*) tmp + size);
       arr_el_j = (void *)((char*) arr_el_j + sizes[++j]);
-    } else { 
+    } 
+    if (k < r + 1) { 
       size = sizes[k];
       memcpy(tmp, arr_el_k, size);
-      tmp_sizes[i] = size;
 
       tmp = (void *)((char*) tmp + size);
       arr_el_k = (void *)((char*) arr_el_k + sizes[++k]);
     }
+    tmp_sizes[i] = size;
   }
 
   //copy all from *tmp to *mem

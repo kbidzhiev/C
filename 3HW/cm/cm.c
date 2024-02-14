@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <limits.h>
+#include <string.h>
 
 
 typedef int (*xcmp_t)(void *lhs, int lsz, void *rhs, int rsz);
@@ -20,29 +21,28 @@ void *arr_elem(void *mem, int* sizes, int nelts, int elem_id) {
 }
 
 void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
-  int i, j, k, nbytes, min;
+  int i, j, k, nbytes;
   int size = r - l + 1;
-  void *arr1, *arr2;
-  void *tmp, *tmp0;
+  void *arr_el_j, *arr_el_k;
+  void *tmp;
 
   // compute size required for malloc
   nbytes = sum_arr_elem(sizes, nelts, l, size);
 
   // allocate memory for merging `size` elements
   tmp = malloc(nbytes * CHAR_BIT);
-  tmp0 = tmp;
   //copy elements from [l;m] and [m+1;r] to *tmp
   i = 0, j = l, k = m + 1;
   for(; i < (j < m + 1) && (k < r + 1); ++i) {
     arr_el_j = arr_elem(mem, sizes, nelts, j);
     arr_el_k = arr_elem(mem, sizes, nelts, k);
     if(cmp(arr_el_j, sizes[j], arr_el_k, sizes[k]) <= 0) {
-      memcpy(tmp, arr_el_j, nelts[j]);
-      tmp = (void *)((char*) tmp + nelts[j]);
+      memcpy(tmp, arr_el_j, sizes[j]);
+      tmp = (void *)((char*) tmp + sizes[j]);
       ++j;
     } else { 
-      memcpy(tmp, arr_el_k, nelts[k]);
-      tmp = (void *)((char*) tmp + nelts[k]);
+      memcpy(tmp, arr_el_k, sizes[k]);
+      tmp = (void *)((char*) tmp + sizes[k]);
       ++k;
     }
   }
@@ -52,23 +52,25 @@ void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
     arr_el_j = arr_elem(mem, sizes, nelts, j);
     arr_el_k = arr_elem(mem, sizes, nelts, k);
     if(j < m + 1) {
-      memcpy(tmp, arr_el_j, nelts[j]);
-      tmp = (void *)((char*) tmp + nelts[j]);
+      memcpy(tmp, arr_el_j, sizes[j]);
+      tmp = (void *)((char*) tmp + sizes[j]);
       ++j;
     } else { 
-      memcpy(tmp, arr_el_k, nelts[k]);
-      tmp = (void *)((char*) tmp + nelts[k]);
+      memcpy(tmp, arr_el_k, sizes[k]);
+      tmp = (void *)((char*) tmp + sizes[k]);
       ++k;
     }
   }
 
   //copy all from *tmp to *mem
+  tmp = (void *)((char*) tmp - nbytes);
   for(i = 0; i < size; ++i) { 
-    arr_el_i = arr_elem(mem, sizes, nelts, i + l);
-    memcpy(arr_el_i, tmp0, nelts[i + l]);
-    tmp0 = (void *)((char*) tmp0 + nelts[i + l]);
+    arr_el_j = arr_elem(mem, sizes, nelts, i + l);
+    memcpy(arr_el_j, tmp, sizes[i + l]);
+    tmp = (void *)((char*) tmp + sizes[i + l]);
   }
 
+  tmp = (void *)((char*) tmp - nbytes);
   free(tmp);//free tmp !
 }
 
@@ -84,6 +86,6 @@ void xmsort_impl(void *mem, int *sizes, int nelts, int l, int r, xcmp_t cmp) {
 
 
 void xmsort(void *mem, int *sizes, int nelts, xcmp_t cmp) {
-  xmsort_imp(mem, sizes, nelts, 0, nelts - 1, xcmp_t cmp);
+  xmsort_impl(mem, sizes, nelts, 0, nelts - 1, cmp);
 }
 

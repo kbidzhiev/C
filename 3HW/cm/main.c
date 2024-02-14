@@ -35,7 +35,7 @@ int cmp(void *lhs, int lsz, void *rhs, int rsz) {
   return 0;
 }
 
-void test_sorting(int k) {
+void test_sorting_1(int k) {
   int s = sizeof(int);
   int arr[4] = {3, 2, 6, 1};
   int sizes[4] = {s, s, s, s};
@@ -55,13 +55,36 @@ void test_sorting(int k) {
   assert(3 == arr[2]); 
   assert(6 == arr[3]);
 
-  printf("%d. test_sorting - OK;\n", k);
+  printf("%d. test_sorting_1 - OK;\n", k);
 }
 
+void test_sorting_2(int k) {
+  int s = sizeof(int);
+  int arr[7] = {3, 2, 6, 1, 9, -2, 3};
+  int sizes[7] = {s, s, s, s, s, s, s};
+  for(s = 0; s < 7; ++s) {
+    printf("%d ", arr[s]);
+  }
+  printf("\n");
+
+  xmsort(arr, sizes, 7, cmp);
+  
+  for(s = 0; s < 7; ++s) {
+    printf("%d ", arr[s]);
+  }
+  printf("\n");
+  assert(-2 == arr[0]); 
+  assert(1 == arr[1]); 
+  assert(2 == arr[2]); 
+  assert(3 == arr[3]);
+
+  printf("%d. test_sorting_2 - OK;\n", k);
+}
 
 void test_all(void) {
   test_sum_arr_elem(1);
-  test_sorting(2);
+  test_sorting_1(2);
+  test_sorting_2(3);
   printf("All tests are OK\n");
 }
 

@@ -77,14 +77,46 @@ void test_sorting_2(int k) {
   assert(1 == arr[1]); 
   assert(2 == arr[2]); 
   assert(3 == arr[3]);
+  assert(3 == arr[4]);
+  assert(6 == arr[5]);
+  assert(9 == arr[6]);
 
   printf("%d. test_sorting_2 - OK;\n", k);
 }
 
+void test_sorting_3(int k) {
+  int size = 10;
+  int s = sizeof(int);
+  int arr[10] = {8, 9, 9, 7, 1, 7, 9, 9, 1, 8};
+  int sizes[10] = {s, s, s, s, s, s, s, s, s, s};
+  for(s = 0; s < size; ++s) {
+    printf("%d ", arr[s]);
+  }
+  printf("\n");
+
+  xmsort(arr, sizes, size, cmp);
+  
+  for(s = 0; s < size; ++s) {
+    printf("%d ", arr[s]);
+  }
+  printf("\n");
+  assert(1 == arr[0]); 
+  assert(1 == arr[1]); 
+  assert(7 == arr[2]); 
+  assert(7 == arr[3]);
+  assert(8 == arr[4]);
+  assert(8 == arr[5]); 
+  assert(9 == arr[6]);
+  assert(9 == arr[7]);
+  assert(9 == arr[8]);
+  assert(9 == arr[9]);
+  printf("%d. test_sorting_3 - OK;\n", k);
+}
 void test_all(void) {
   test_sum_arr_elem(1);
   test_sorting_1(2);
   test_sorting_2(3);
+  test_sorting_3(4);
   printf("All tests are OK\n");
 }
 

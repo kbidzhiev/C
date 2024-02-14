@@ -37,13 +37,17 @@ void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
   arr_el_k = arr_elem(mem, sizes, nelts, k);
   for(; i < (j < m + 1) && (k < r + 1); ++i) {
     if(cmp(arr_el_j, sizes[j], arr_el_k, sizes[k]) <= 0) {
+      arr_el_j = arr_elem(mem, sizes, nelts, j);
       memcpy(tmp, arr_el_j, sizes[j]);
       tmp = (void *)((char*) tmp + sizes[j]);
-      arr_el_j = (void *)((char*) arr_el_j + sizes[++j]);
+      ++j;
+      //arr_el_j = (void *)((char*) arr_el_j + sizes[++j]);
     } else { 
+      arr_el_k = arr_elem(mem, sizes, nelts, k);
       memcpy(tmp, arr_el_k, sizes[k]);
       tmp = (void *)((char*) tmp + sizes[k]);
-      arr_el_k = (void *)((char*) arr_el_k + sizes[++k]);
+      ++k;
+      //arr_el_k = (void *)((char*) arr_el_k + sizes[++k]);
     }
   }
   
@@ -52,13 +56,17 @@ void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
   arr_el_k = arr_elem(mem, sizes, nelts, k);
   for(; i < size; ++i) {
     if(j < m + 1) {
+      arr_el_j = arr_elem(mem, sizes, nelts, j);
       memcpy(tmp, arr_el_j, sizes[j]);
       tmp = (void *)((char*) tmp + sizes[j]);
-      arr_el_j = (void *)((char*) arr_el_j + sizes[++j]);
+      ++j;
+      //arr_el_j = (void *)((char*) arr_el_j + sizes[++j]);
     } else { 
+      arr_el_k = arr_elem(mem, sizes, nelts, k);
       memcpy(tmp, arr_el_k, sizes[k]);
       tmp = (void *)((char*) tmp + sizes[k]);
-      arr_el_k = (void *)((char*) arr_el_k + sizes[++k]);
+      ++k;
+      //arr_el_k = (void *)((char*) arr_el_k + sizes[++k]);
     }
   }
 
@@ -82,7 +90,6 @@ void xmsort_impl(void *mem, int *sizes, int nelts, int l, int r, xcmp_t cmp) {
   xmsort_impl(mem, sizes, nelts, m + 1, r, cmp);
   merge(mem, sizes, nelts, l, m, r, cmp);
 }
-
 
 
 void xmsort(void *mem, int *sizes, int nelts, xcmp_t cmp) {

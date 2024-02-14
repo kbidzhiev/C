@@ -23,6 +23,23 @@ void test_sum_arr_elem(int k) {
   printf("%d. test_sum_arr_elem - OK;\n", k);
 }
 
+void *arr_elem(void *mem, int* sizes, int nelts, int elem_id);
+void test_shift(int k) {
+  int el;
+  int s = sizeof(int);
+  int arr[6] = {3, 5, 9, 1, 2, 8};
+  int sizes[6] = {s, s, s, s, s ,s};
+  
+  el = *(int *)arr_elem(arr, sizes, 6, 1);
+  assert(5 == el);
+
+  el = *(int *)arr_elem(arr, sizes, 6, 5);
+  assert(8 == el);
+
+  printf("%d. Test shift -OK;\n", k);
+}
+
+
 int cmp(void *lhs, int lsz, void *rhs, int rsz) {
   int l, r;
   if (lsz != rsz) {
@@ -114,9 +131,10 @@ void test_sorting_3(int k) {
 }
 void test_all(void) {
   test_sum_arr_elem(1);
-  test_sorting_1(2);
-  test_sorting_2(3);
-  test_sorting_3(4);
+  test_shift(2);
+  test_sorting_1(3);
+  test_sorting_2(4);
+  test_sorting_3(5);
   printf("All tests are OK\n");
 }
 

@@ -21,7 +21,7 @@ void *arr_elem(void *mem, int* sizes, int nelts, int elem_id) {
 }
 
 void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
-  int i, j, k, nbytes, size;
+  int i, j, k, nbytes, size = 0;
   int length = r - l + 1;
   void *arr_el_j, *arr_el_k, *tmp, *tmp0;
   int *tmp_sizes;
@@ -35,7 +35,6 @@ void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
   i = 0, j = l, k = m + 1;
   arr_el_j = arr_elem(mem, sizes, nelts, j);
   arr_el_k = arr_elem(mem, sizes, nelts, k);
-  size = 0;
   for(; (j < m + 1) && (k < r + 1); ++i) {
     if(cmp(arr_el_j, sizes[j], arr_el_k, sizes[k]) <= 0) {
       size = sizes[j];
@@ -73,20 +72,18 @@ void merge(void *mem, int *sizes, int nelts, int l, int m, int r, xcmp_t cmp) {
   //copy all from *tmp to *mem
   //tmp = (void *)((char*) tmp - nbytes);
   tmp = tmp0;
-  arr_el_j = arr_elem(mem, sizes, nelts, l);
+  mem = arr_elem(mem, sizes, nelts, l);
   for(i = l; i < r + 1; ++i) {
     size = tmp_sizes[i - l];
     //copy
-    memcpy(arr_el_j, tmp, size);
+    memcpy(mem, tmp, size);
     sizes[i] = tmp_sizes[i - l];
     // iterate next
     tmp = (void *)((char*) tmp + size);
-    arr_el_j = (void *)((char*) arr_el_j + size);
+    mem = (void *)((char*) mem + size);
   }
 
-  //tmp = (void *)((char*) tmp - nbytes);
-  tmp = tmp0;
-  free(tmp);
+  free(tmp0);
   free(tmp_sizes);
 }
 

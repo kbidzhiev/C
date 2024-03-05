@@ -43,7 +43,8 @@ int arr_printf(const struct arr_t arr) {
 struct arr_t read_array() {
   int size;
   struct arr_t arr;
-  scanf("%d", &size);
+  if (1 != scanf("%d", &size))
+    abort();
   arr = arr_calloc(size);
   arr_scanf(&arr);
   return arr;
@@ -55,42 +56,81 @@ int pow_base(const int base, const int pow) {
     res *= base;
   return res;
 }
-void inclusive_scan(struct arr_t *arr) {
-  for (int i = 1; i < arr -> size; ++i)
-    arr -> p[i] += arr -> p[i-1];
+
+void swap(int *a, int *b) {
+  int tmp = *a;
+  *a = *b;
+  *b = tmp;
 }
-void rs(struct arr_t *arr, int digit) {
-  int num = 0;
-  digit = pow_base(base, digit);
+void inclusive_scan(struct arr_t *arr) {
+  int tmp0;
+  int tmp = arr -> p[0];
+  arr -> p[0] = 0;
+  for (int i = 1; i < arr -> size; ++i) {
+    tmp0 = arr -> p[i];
+    arr -> p[i] = arr -> p[i-1] + tmp;
+    swap(&tmp, &tmp0);
+  }
+}
+
+int n_digit(int num, int base, int digit) {
+  for (int i = 0; i < digit; ++i) {
+    num /= base; 
+  }
+  return num % base;
+}
+
+struct arr_t rs(struct arr_t *arr, int digit) {
   struct arr_t buckets = arr_calloc(base);
+  struct arr_t res = arr_calloc(arr -> size);
+  int num = 0;
+  int future_position;
+
+  digit = pow_base(base, digit);
   for (int i = 0; i < arr -> size; ++i) {
-    num = (arr -> p[i]) % digit;
+    num = n_digit(arr -> p[i], base, digit);
+    if (num > 9 || num < 0) {
+      printf("remainder cannot be %d\n", num);
+      abort();
+    }
     buckets.p[num] += 1;
   }
-  arr_printf(buckets);
   inclusive_scan(&buckets);
-  arr_printf(buckets);
+
+  for(int i = 0; i < arr -> size; ++i) {
+    num = n_digit(arr -> p[i], base, digit);
+    future_position = buckets.p[num]; 
+    res.p[future_position] = arr -> p[i];
+    ++buckets.p[num];
+  }
+ 
+  arr_free(arr);
   arr_free(&buckets);
+  return res;
 }
 
 int main(void) {
   int digit;
   struct arr_t arr = read_array();
-  arr_printf(arr);
   {
     assert(10 == pow_base(10, 0)); 
     assert(100 == pow_base(10, 1)); 
     assert(1000 == pow_base(10, 2)); 
     assert(2 == pow_base(2, 0)); 
     assert(4 == pow_base(2, 1)); 
+
+    assert(3 == n_digit(123, 10, 0));
+    assert(2 == n_digit(123, 10, 1));
+    assert(1 == n_digit(123, 10, 2));
   }
 
   
-  scanf("%d", &digit);
+  if (1 != scanf("%d", &digit))
+    abort();
   
-  arr_printf(arr);
-  rs(&arr, digit);
+  arr = rs(&arr, digit);
 
+  arr_printf(arr);
   arr_free(&arr);
   return 0;
 }

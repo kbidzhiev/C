@@ -86,7 +86,7 @@ struct arr_t rs(struct arr_t *arr, int digit) {
   int num = 0;
   int future_position;
 
-  digit = pow_base(base, digit);
+  //digit = pow_base(base, digit);
   for (int i = 0; i < arr -> size; ++i) {
     num = n_digit(arr -> p[i], base, digit);
     if (num > 9 || num < 0) {

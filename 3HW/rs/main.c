@@ -10,9 +10,9 @@ struct arr_t {
 };
 
 struct arr_t arr_calloc(int size) {
-  struct arr_t arr;
-  arr.size = size;
-  arr.p = calloc(size, sizeof(int));
+  struct arr_t arr = {size, calloc(size, sizeof(int))};
+  //arr.size = size;
+  //arr.p = calloc(size, sizeof(int));
   if (NULL == arr.p)
     abort();
   return arr;
@@ -77,7 +77,12 @@ int n_digit(int num, int base, int digit) {
   for (int i = 0; i < digit; ++i) {
     num /= base; 
   }
-  return num % base;
+  num = num % base; 
+  if (num > 9 || num < 0) {
+    printf("remainder cannot be %d\n", num);
+    abort();
+  }
+  return num;
 }
 
 struct arr_t rs(struct arr_t *arr, int digit) {
@@ -89,10 +94,6 @@ struct arr_t rs(struct arr_t *arr, int digit) {
   //digit = pow_base(base, digit);
   for (int i = 0; i < arr -> size; ++i) {
     num = n_digit(arr -> p[i], base, digit);
-    if (num > 9 || num < 0) {
-      printf("remainder cannot be %d\n", num);
-      abort();
-    }
     buckets.p[num] += 1;
   }
   inclusive_scan(&buckets);

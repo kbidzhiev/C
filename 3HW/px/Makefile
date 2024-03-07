@@ -4,7 +4,7 @@ CFLAGS += -pedantic
 CFLAGS += -g
 #CFLAGS += -O2 -DNDEBUG
 TARGET = a.out
-SRCS = main.c 
+SRCS = main.c  
 OBJS = $(SRCS:.c=.o)
 
 $(TARGET): $(OBJS)

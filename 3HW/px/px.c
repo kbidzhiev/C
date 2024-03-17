@@ -63,9 +63,46 @@ mat_t Id() {
   return M;
 }
 
-void callmat() {
-  mat_t M = Id();
+void rem(mat_t M, unsigned mod) {
+  for(int i = 0; i < N; ++i) {
+    for(int j = 0; j < N; ++j) {
+      M[i][0][j] = M[i][0][j] % mod;
+    }
+  }
+}
 
+mat_t matmul(mat_t A, mat_t B) {
+  mat_t res = Mcalloc();
+  for(int i = 0; i < N; ++i) {
+    for(int j = 0; j < N; ++j) {
+      for(int k = 0; k < N; ++k) {
+        res[i][0][j] = A[i][0][k] * B[k][0][j];
+      }
+    }
+  }
+  return res;
+}
+
+/*
+void powNxN (unsigned (*A)[N], unsigned k, unsigned m) {
+  rem(A, m)
+  mat prod = Id();
+  while (k > 0) {
+    if ((k % 2) == 1) {
+      prod = (prod * A);
+      rem(A, m);
+    }
+    A = (A * A);
+    rem(A, m);
+    k /= 2;
+  }
+}
+*/
+void callmat() {
+  mat_t M;
+  mat_t A = Id();
+  mat_t B = Id();
+  M = matmul(A, B);
 
   Mprintf(M);
   Mfree(M);

@@ -76,7 +76,8 @@ mat_t matmul(mat_t A, mat_t B) {
   for(int i = 0; i < N; ++i) {
     for(int j = 0; j < N; ++j) {
       for(int k = 0; k < N; ++k) {
-        res[i][0][j] = A[i][0][k] * B[k][0][j];
+        printf("%d %d %d\n", i , j, k);
+        res[i][0][j] += A[i][0][k] * B[k][0][j];
       }
     }
   }
@@ -106,4 +107,6 @@ void callmat() {
 
   Mprintf(M);
   Mfree(M);
+  Mfree(A);
+  Mfree(B);
 }

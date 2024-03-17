@@ -2,7 +2,8 @@
 #include<stdio.h>
 #include<assert.h>
 
-#include<px.c>
+#include"px.h"
+
 
 int main(void) {
 

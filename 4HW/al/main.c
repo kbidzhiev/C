@@ -3,10 +3,10 @@
 #include"al.h"
 
 void print_list(const struct node_t *list_in) {
-  if (list_in == NULL)
-    return;
-  for(const struct node_t * list = list_in; NULL != list; list = list -> next)
+  const struct node_t * list = list_in;
+  for(;NULL != list; list = list -> next)
     printf("%d ", list -> data);
+  printf("\n");
 }
 
 int main(int argc, char **argv) {
@@ -30,6 +30,6 @@ int main(int argc, char **argv) {
   print_list(list);
   delete_list(list);
   printf("delete list and print deleted content\n");
-  print_list(list);
+  //print_list(list);
   return 0;
 }

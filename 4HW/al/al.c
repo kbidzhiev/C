@@ -22,27 +22,15 @@ struct node_t *read_list(FILE *inp) {
     struct node_t *node = calloc(1, sizeof(struct node_t));
     node -> data = n;
     if(n % 2 == 0) {
-      if(NULL == even_begin) {
-        even_begin = node;
-        even = node;
-      } else {
-        even -> next = node; 
-        even = node;
-      }
-      
+      (NULL == even_begin) ? (even_begin = node) : (even -> next = node);
+      even = node;
     } else {
-      if(NULL == odd_begin) {
-        odd_begin = node; 
-        odd = node;
-      } else {
-        odd -> next = node; 
-        odd = node;
-      } 
+      (NULL == odd_begin) ? (odd_begin = node) : (odd -> next = node);
+      odd = node;
     }
   }
-  if (NULL == even_begin) {
+  if (NULL == even_begin)
     return odd_begin;
-  }
   even -> next = odd_begin;
   return even_begin;
 }

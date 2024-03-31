@@ -1,7 +1,7 @@
 #ifndef POW
 #define POW
 
-#define N 3
+#define N 2
 void powNxN (unsigned (*A)[N], unsigned k, unsigned m);
 
 

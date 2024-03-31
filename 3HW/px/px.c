@@ -1,4 +1,4 @@
-#include"px.h"
+//#include"px.h"
 #include<stdlib.h>
 #include<stdio.h>
 /*
@@ -24,6 +24,9 @@ mat_t Mcalloc() {
     printf("Fail to allocate N rows\n");
     abort();
   }
+  for(int i = 0; i < N; ++i)
+    for(int j = 0; j < N; ++j)
+      M[i][j] = 0;
   return M;
 }
 
@@ -41,16 +44,14 @@ void Mprintf(mat_t M) {
 mat_t Id() {
   mat_t M = Mcalloc();
   for(int i = 0; i < N; ++i)
-    for(int j = 0; j < N; ++j)
-      if (i == j)
-        M[i][j] = 1;
+    M[i][i] = 1;
   return M;
 }
 
 void rem(mat_t M, unsigned mod) {
   for(int i = 0; i < N; ++i)
     for(int j = 0; j < N; ++j)
-      M[i][j] = M[i][j] % mod;
+      M[i][j] = (M[i][j]) % mod;
 }
 
 mat_t matmul(mat_t A, mat_t B) {
@@ -82,27 +83,50 @@ void matcopy(mat_t from, mat_t to) {
 }
 
 void powNxN (unsigned (*A)[N], unsigned k, unsigned m) {
-  mat_t tmp, prod;
-  rem(A, m);
-  prod = Id();
+  mat_t tmp;
+  mat_t prod = Id(); //prod = 1
+  mat_t mult = Mcalloc();
+  matcopy(A, mult);
+  rem(mult, m);
   while (k > 0) {
     if ((k % 2) == 1) {
-      tmp = matmul(prod, A);
+      tmp = matmul(mult, prod);
       matcopy(tmp, prod);
+
       Mfree(tmp);
       rem(prod, m);
     }
-    tmp = matmul(A, A);
-    matcopy(tmp, A);
+    tmp = matmul(mult, mult);
+    matcopy(tmp, mult);
     Mfree(tmp);
-    rem(A, m);
+    rem(mult, m);
     k /= 2;
   }
+  matcopy(prod, A);
+  Mfree(prod);
+  Mfree(mult);
 }
 
 void callmat() {
-  mat_t M = Id();
-  powNxN(M, 10, 4);
+  //A = {1 1 1 0}, N = 2, x = 20, m = 10
+  mat_t M = Mcalloc();
+  M[0][0] = 1;
+  M[0][1] = 1;
+  M[1][0] = 1;
+  M[1][1] = 0;
+  powNxN(M, 20, 10);
   Mprintf(M);
+  /* 
+  for(int i = 0; i < 8; ++i) {
+    printf("i = %u\n", i);
+    M[0][0] = 1;
+    M[0][1] = 1;
+    M[1][0] = 1;
+    M[1][1] = 0;
+    powNxN(M, i, 10);
+    Mprintf(M);
+    printf("\n");
+  }
+  */
   Mfree(M);
 }

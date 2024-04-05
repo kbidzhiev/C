@@ -7,6 +7,11 @@ struct node_t {
   int data;
 };
 
+struct buckets_t {
+  struct node_t **arr;
+  int size;
+};
+
 int find_max(const int * arr, int len) {
   int res;
   if (NULL == arr) {
@@ -33,21 +38,23 @@ void append_to_list(struct node_t *list, int new_data) {
 }
 
 
-struct node_t ** build_buckets(const int *arr, const int len) {
-  int max = find_max(arr, len);
-  int n_buckets = max/len;
-  struct node_t **buckets = calloc(n_buckets, sizeof(struct node_t *));
+struct buckets_t *build_buckets(const int *nums, const int len) {
+  int max = find_max(nums, len);
+  struct buckets_t *buckets = calloc(1, sizeof(struct buckets_t));
+  buckets -> size = max/len;
+  buckets -> arr = calloc(buckets -> size, sizeof(struct node_t *));
 
   for (int i = 0; i < len; ++i) {
-    append_to_list(buckets[arr[i]/max], arr[i]);
+    int bucket = nums[i]/max;
+    append_to_list(buckets -> arr[bucket], nums[i]);
   }
   return buckets;
 }
 
-void free_buckets(struct node_t **arr) {
+void free_buckets(struct buckets_t *buckets) {
   struct node_t * list;
-  for(int i = 0; i < arr -> data; ++i) {
-    for(list = arr[i]; NULL != list; list = list -> next) {
+  for(int i = 0; i < buckets -> size; ++i) {
+    for(list = buckets -> arr[i]; NULL != list; list = list -> next) {
       struct node_t *tmp = list -> next;
       list -> next = NULL;
       free(list);
@@ -55,29 +62,34 @@ void free_buckets(struct node_t **arr) {
     }
   }
 
-  for(int i = 0; i < arr -> data; ++i)
-    assert(NULL == arr[i]);
+  for(int i = 0; i < buckets -> size; ++i)
+    assert(NULL == buckets -> arr[i]);
 
-  free(arr);
+  free(buckets -> arr);
+  buckets -> arr = NULL;
+  buckets -> size = 0;
+  free(buckets);
+  buckets = NULL;
 }
 
+
 void print_list(const struct node_t *list) {
-  struct node_t *i;
+  const struct node_t *i;
   for (i = list; i != NULL; i = i -> next) {
     printf("%d ", i -> data);
   }
 }
 
-void print_buckets(const struct node_t **arr) {
-  for(int i = 0; i < arr -> data; ++i) {
-    print_list(arr[i]);
+void print_buckets(const struct buckets_t *buckets) {
+  for(int i = 0; i < buckets -> size; ++i) {
+    print_list(buckets -> arr[i]);
     printf("0 ");
   }
 }
 
 int main(void) {
   int len = 0, *arr;
-  struct node_t **buckets;
+  struct buckets_t *buckets;
   if (1 != scanf("%d", &len))
       abort();
 

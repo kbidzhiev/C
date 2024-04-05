@@ -24,12 +24,12 @@ int find_max(const int * arr, int len) {
 }
 
 
-void append_to_list(struct node_t *list, int new_data) {
-  struct node_t *l = list;
+void append_to_list(struct node_t **plist, int new_data) {
+  struct node_t *l = *plist;
   struct node_t *new_node = calloc(1, sizeof(struct node_t));
-  new_node ->data = new_data;
-  if (NULL == list) {
-    list = new_node;
+  new_node -> data = new_data;
+  if (NULL == *plist) {
+    *plist = new_node;
     return;
   }
   while(NULL != l -> next)
@@ -41,12 +41,15 @@ void append_to_list(struct node_t *list, int new_data) {
 struct buckets_t *build_buckets(const int *nums, const int len) {
   int max = find_max(nums, len);
   struct buckets_t *buckets = calloc(1, sizeof(struct buckets_t));
-  buckets -> size = max/len;
+  buckets -> size = len;
   buckets -> arr = calloc(buckets -> size, sizeof(struct node_t *));
 
   for (int i = 0; i < len; ++i) {
-    int bucket = nums[i]/max;
-    append_to_list(buckets -> arr[bucket], nums[i]);
+    int bucket_id = nums[i]/(max/len);
+    if(nums[i] == max) {
+      bucket_id = len - 1;
+    }
+    append_to_list(buckets -> arr + bucket_id, nums[i]);
   }
   return buckets;
 }
@@ -54,16 +57,14 @@ struct buckets_t *build_buckets(const int *nums, const int len) {
 void free_buckets(struct buckets_t *buckets) {
   struct node_t * list;
   for(int i = 0; i < buckets -> size; ++i) {
-    for(list = buckets -> arr[i]; NULL != list; list = list -> next) {
+    for(list = buckets -> arr[i]; NULL != list; ) {
       struct node_t *tmp = list -> next;
       list -> next = NULL;
       free(list);
       list = tmp;
     }
+    buckets -> arr[i] = NULL;
   }
-
-  for(int i = 0; i < buckets -> size; ++i)
-    assert(NULL == buckets -> arr[i]);
 
   free(buckets -> arr);
   buckets -> arr = NULL;
@@ -100,6 +101,7 @@ int main(void) {
    
   buckets = build_buckets(arr, len);
   print_buckets(buckets);
+  printf("\n");
   free_buckets(buckets);
   free(arr);
   return 0;

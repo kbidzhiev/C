@@ -12,19 +12,21 @@ struct buckets_t {
   int size;
 };
 
-int find_max(const int * arr, int len) {
+int find_max(const int * arr, const int len) {
   int res;
   if (NULL == arr) {
     abort();
   }
   res = arr[0];
-  for(int i = 1; i < len; ++i)
+  for(int i = 1; i < len; ++i) {
+    //printf("choosing between %d and %d\n", res, arr[i]);
     res = arr[i] > res ? arr[i] : res;
+    //printf("res = %d\n", res);
+  }
   return res;
 }
 
-
-void append_to_list(struct node_t **plist, int new_data) {
+void append_to_list(struct node_t **plist, const int new_data) {
   struct node_t *new_node = calloc(1, sizeof(struct node_t));
   new_node -> data = new_data;
   
@@ -40,36 +42,27 @@ void append_to_list(struct node_t **plist, int new_data) {
   }
 }
 
-void append_to_list0(struct node_t **plist, int new_data) {
-  struct node_t *l = *plist;
-  struct node_t *new_node = calloc(1, sizeof(struct node_t));
-  new_node -> data = new_data;
-  if (NULL == *plist) {
-    *plist = new_node;
-    return;
-  }
-  while((NULL != l -> next) && (l -> data < new_data))
-    l = l -> next;
- 
-  new_node -> next = l;
-  l = new_node;
-  l -> next = new_node;
-   
-}
-
-
 struct buckets_t *build_buckets(const int *nums, const int len) {
+  int bucket_id; 
   int max = find_max(nums, len);
+  int batch_size = max/len;
   struct buckets_t *buckets = calloc(1, sizeof(struct buckets_t));
+  if(NULL == buckets)
+    abort();
   buckets -> size = len;
   buckets -> arr = calloc(buckets -> size, sizeof(struct node_t *));
 
+  if(NULL == buckets -> arr)
+    abort();
+
   for (int i = 0; i < len; ++i) {
-    int bucket_id = nums[i]/(max/len);
-    if(nums[i] == max) {
+    //printf("parsing loop %d : %d\n", i, nums[i]);
+    bucket_id = nums[i]/batch_size;
+    //printf("parsing %d to bucket %d\n", nums[i], bucket_id);
+    if(bucket_id >= len) {
       bucket_id = len - 1;
     }
-    append_to_list(buckets -> arr + bucket_id, nums[i]);
+    append_to_list((buckets -> arr) + bucket_id, nums[i]);
   }
   return buckets;
 }
@@ -109,16 +102,29 @@ void print_buckets(const struct buckets_t *buckets) {
 }
 
 int main(void) {
-  int len = 0, *arr;
+  int len = 0, *arr , i;
   struct buckets_t *buckets;
   if (1 != scanf("%d", &len))
       abort();
-
+  if(0 == len)
+    abort();
+  
   arr = calloc(len, sizeof(int));
-  for(int i = 0; i < len; ++i) 
-    if (1 != scanf("%d", arr + i))
+  if(NULL == arr)
+    abort();
+
+  for(i = 0; i < len; ++i) {
+    if (1 != scanf("%d", &arr[i])) {
       abort();
-   
+    }
+  }
+  
+  //printf("array:\n");
+  //for(i = 0; i < len; ++i) {
+  //  printf("arr[%d]: %d \n", i, arr[i]);
+  //}
+
+
   buckets = build_buckets(arr, len);
   print_buckets(buckets);
   printf("\n");

@@ -25,6 +25,22 @@ int find_max(const int * arr, int len) {
 
 
 void append_to_list(struct node_t **plist, int new_data) {
+  struct node_t *new_node = calloc(1, sizeof(struct node_t));
+  new_node -> data = new_data;
+  
+  while((NULL != *plist) && ((*plist) -> data < new_data))
+    plist = &((*plist) -> next);
+
+  if(NULL == *plist) {
+    new_node -> next = NULL;
+    *plist = new_node;
+  } else {
+    new_node -> next = *plist;
+    *plist = new_node;
+  }
+}
+
+void append_to_list0(struct node_t **plist, int new_data) {
   struct node_t *l = *plist;
   struct node_t *new_node = calloc(1, sizeof(struct node_t));
   new_node -> data = new_data;
@@ -32,9 +48,13 @@ void append_to_list(struct node_t **plist, int new_data) {
     *plist = new_node;
     return;
   }
-  while(NULL != l -> next)
+  while((NULL != l -> next) && (l -> data < new_data))
     l = l -> next;
+ 
+  new_node -> next = l;
+  l = new_node;
   l -> next = new_node;
+   
 }
 
 

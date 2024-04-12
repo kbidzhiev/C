@@ -19,6 +19,17 @@ struct node_t * build_list(FILE *f) {
   return list;
 }
 
+void free_list(struct node_t *top) {
+  struct node_t *tmp;
+  while(top != NULL) {
+    tmp = top -> next;
+    top -> next = NULL;
+    top -> data = 0;
+    free(top);
+    top = tmp;
+  }
+}
+
 void print_list(const struct node_t * top) {
   while(NULL != top) {
     printf("%d ", top -> data);
@@ -34,6 +45,7 @@ int main(int argc, char **argv) {
   top = build_list(f);
   print_list(top);
 
+  free_list(top);
   fclose(f);
   return 0;
 }

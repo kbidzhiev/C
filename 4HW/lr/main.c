@@ -44,6 +44,8 @@ int main(int argc, char **argv) {
 
   top = build_list(f);
   print_list(top);
+  top = reverse(top);
+  print_list(top);
 
   free_list(top);
   fclose(f);

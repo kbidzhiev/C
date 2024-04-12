@@ -9,7 +9,12 @@ struct node_t* next(struct node_t *list) {
   return list;
 }
 
+int list_is_a_loop(struct node_t *top);
+int loop_len(struct node_t *top) {
+  return list_is_a_loop(top);
+}
 int list_is_a_loop(struct node_t *top) {
+  int i = 0;
   struct node_t *hare, *turtle;
   turtle = top;
   hare = top;
@@ -19,7 +24,15 @@ int list_is_a_loop(struct node_t *top) {
     hare = next(hare);
     turtle = next(turtle);
   }
-  if(NULL != hare) 
-    return 1;
-  return 0;
+  if(NULL == hare) 
+    return 0;
+
+  hare = turtle;  
+  turtle = next(turtle);
+  ++i;
+  while(turtle != hare) {
+    turtle = next(turtle);
+    ++i;
+  }
+  return i;
 }

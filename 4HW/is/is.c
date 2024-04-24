@@ -15,69 +15,54 @@ struct tree_t {
 
 struct stack_t {
   struct stack_t *next;
-  struct tree_t *data;
+  struct tree_t *tree_node;
 };
 
-struct stack_t* push(struct stack_t *top, struct tree_t *data) {
+struct stack_t* push(struct stack_t *top, struct tree_t *new_tree_node) {
   struct stack_t *node; 
-  if (NULL == data)
+  if (NULL == new_tree_node)
     return top;
   node = calloc(1, sizeof(struct stack_t));
-  node -> data = data;
+  node -> tree_node = new_tree_node;
   node -> next = top;
   return node;
 }
 
 int empty(struct stack_t *s) {
-  if(NULL == s)
-    return 1;
-  return 0;
+  return NULL == s;
 }
 
 struct tree_t* pop(struct stack_t **pstack) {
-  struct tree_t *data;
-  struct stack_t *next;
-  data = (*pstack) -> data;
-  next = (*pstack) -> next;
+  struct tree_t *data = (*pstack) -> tree_node;
+  struct stack_t *next = (*pstack) -> next;
   free(*pstack);
   *pstack = next;
   return data;
 }
 
 struct stack_t* fill_stack(struct tree_t *top) {
-  struct stack_t *s1=NULL, *s2=NULL;
-  s1 = push(s1, top);
-  while(!empty(s1)) {
-    struct tree_t *node = pop(&s1);
-    if (NULL != node -> right) {
-      s1 = push(s1, node);
-      s1 = push(s1, node -> right);
-      continue;
+  struct stack *s1 = NULL, *s2 = NULL;
+  struct tree_t *current = top;
+
+  while(!empty(s1) || NULL != current) {
+    while(NULL != current) {
+      s1 = push(s1, current);
+      current = current -> right;
     }
-    s2 = push(s2, node);
-    if(empty(s1))
-      continue;
-    node = pop(&s1);
-    s2 = push(s2, node);
-    s1 = push(s1, node -> left);
+    current = pop(&s1);
+    s2 = push(s2, current);
+    current = current -> left;
   }
   return s2;
 }
-
-int list_is_ordered(struct stack_t *top) {
-  struct stack_t *next;
-  if (NULL == top)
-    return 1;
-  next = top -> next;
-  if (NULL == next)
-    return 1;
-  while (NULL != next) {
-    int data0 = top -> data -> data;
-    int data1 = next -> data -> data;
+int list_is_ordered(struct stack_t *head) {
+  struct stack_t *top = head;
+  while ((NULL != top) && (NULL != top -> next)) {
+    int data0 = top -> tree_node -> data;
+    int data1 = top -> next -> tree_node -> data;
     if(data0 > data1)
       return 0;
-    top = next;
-    next = top -> next;
+    top = top -> next;
   }
   return 1;
 }
@@ -85,9 +70,9 @@ int list_is_ordered(struct stack_t *top) {
 void free_stack(struct stack_t *top) {
   struct stack_t *tmp;
   while(NULL != top) {
-    tmp = top ->next;
-    free(top);
-    top = tmp;
+    tmp = top;
+    top = top -> next;
+    free(tmp);
   }
 }
 

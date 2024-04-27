@@ -24,14 +24,12 @@ void add_first_node(Tree **ptop, const int new_data) {
 }
 
 void add_node(Tree **ptop, const int new_data) {
-  Tree *next_l, *next_r, *new_node, *current;
+  Tree *new_node, *current;
   if(*ptop == NULL) {
     add_first_node(ptop, new_data);
     return;
   }
   current = *ptop;
-  next_l = current -> left;
-  next_r = current -> right;
   new_node = calloc(1, sizeof(Tree));
   new_node -> data = new_data;
   while(1) {

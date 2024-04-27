@@ -10,6 +10,8 @@ typedef struct tree_t {
 
 int *read_array(const int size);
 void print_array(const int * arr, const int size);
+int find_pos(const int *arr, const int begin, const int end, const int elem);
+
 
 int main(void) {
   int size = 0;
@@ -43,3 +45,11 @@ void print_array(const int * arr, const int size) {
     printf("%d", arr[i]);
   printf("\n");
 }
+
+int find_pos(const int *arr, const int begin, const int end, const int elem) {
+  for(int i = begin; i < end; ++i)
+    if (elem == i)
+      return i;
+}
+
+

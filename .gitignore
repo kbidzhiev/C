@@ -1,5 +1,5 @@
 
-*.txt
+# *.txt
 .DS_Store
 *.swp
 data/

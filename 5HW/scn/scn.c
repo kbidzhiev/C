@@ -4,11 +4,11 @@
 
 int main(void) {
   char c = 0;
-  int acc = -10; //last EOL \n
+  int acc = 10; //last EOL \n
 
   while(scanf("%c", &c) == 1) {
     acc += c; 
-    printf("%c -> %d\n", c, c);
+    //printf("%c -> %d\n", c, c);
   }
 
   printf("%d\n", acc);

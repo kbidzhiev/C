@@ -18,12 +18,17 @@ char *read_array(int *word_sz)
 	return word;
 }
 
-void swaporder(char *word, int begin, int end)
+struct match_t {
+	int begin;
+	int size;
+};
+
+void swaporder(char *word, const size_t sz)
 {
-	for (int i = 0; i < (end - begin) / 2; ++i) {
-		char tmp = word[begin + i];
-		word[begin + i] = word[end - 1 - i];
-		word[end - 1 - i] = tmp;
+	for (int i = 0; i < sz / 2; ++i) {
+		char tmp = word[i];
+		word[i] = word[sz - 1 - i];
+		word[sz - 1 - i] = tmp;
 	}
 }
 
@@ -33,11 +38,6 @@ void print_array(const char *word, const int word_sz)
 		printf("%c", word[i]);
 	printf("\n");
 }
-
-struct match_t {
-	int begin;
-	int end;
-};
 
 struct match_t findmatch(const char *pattern, const char *book)
 {
@@ -52,14 +52,11 @@ struct match_t findmatch(const char *pattern, const char *book)
 	}
 
 	res = regexec(&reg, book, 1, matches, 0);
-	if (!res) {
-		m.begin = matches[0].rm_so;
-		m.end = matches[0].rm_eo;
-	}
-	else if (res == REG_NOMATCH) {
-		m.begin = 0;
-		m.end = 0;
-	}
+	if (!res)
+		m = (struct match_t){matches[0].rm_so, matches[0].rm_eo - matches[0].rm_so};
+	else if (res == REG_NOMATCH)
+		m = (struct match_t){-1, -1};
+
 	else {
 		printf("match error");
 		abort();
@@ -76,9 +73,10 @@ int main(void)
 	char *word = read_array(&word_sz);
 	char *book = read_array(&book_sz);
 
-	for (char *start = book; m.begin == -1 && m.end == -1; start += m.end) {
+	for (char *start = book; m.size == -1; start += m.size) {
 		m = findmatch(word, start);
-		swaporder(start, m.begin, m.end);
+    start += m.begin;
+		swaporder(start, m.size);
 	}
 	print_array(book, book_sz);
 

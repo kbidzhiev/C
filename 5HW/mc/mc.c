@@ -38,8 +38,8 @@ int main(void)
 
 	V[0] = 0;
 	for (int i = 0; i < Ntot + 1; ++i) {
-    if (V[i] == INT_MAX)
-      continue;
+		if (V[i] == INT_MAX)
+			continue;
 		for (int j = 0; j < ncoins; ++j) {
 			int idx = i + coins[j];
 			if (idx < Ntot + 1) {

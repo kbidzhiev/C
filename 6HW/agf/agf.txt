@@ -1,0 +1,31 @@
+// --- int f(int x, int y) ---
+// edi = x
+// esi = y
+// return value = eax
+  .globl  foo
+  .type foo, @function
+foo:
+  mov eax, edi    // z = x
+  imul  eax, edi  // z = x * x
+  imul  eax, edi  // z = x * x * x
+  test  eax, eax  // 
+  js  .L4         // if (z < 0) goto .L4 else return z
+  ret
+.L4:
+  imul  esi, esi  // y = y * y
+  add edi, edi    // x = 2x
+  mov edx, 17     // v = 17
+  sub edx, edi    // v = 17 - 2x
+  sub edx, esi    // v = 17 - 2x -y*y
+  add eax, edx    // z = x * x * x + 17 -2*x - y*y
+  ret             // return z
+
+
+// Finally
+int foo(int x, int y) {
+  int z = x*x*x;
+  if (z<0){
+    z+= 17 - 2*x - y*y;
+  }
+  return z;
+}
